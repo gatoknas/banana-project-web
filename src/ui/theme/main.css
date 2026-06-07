@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  body {
+    @apply bg-emerald text-cream font-outfit antialiased selection:bg-goldenrod selection:text-crimson min-h-screen;
+  }
+
+  input, select, textarea {
+    @apply font-nunito;
+  }
+}
+
+@layer utilities {
+  /* Retro Panel Styling (Thick Yellow Borders with Flat Drop Shadows) */
+  .retro-panel-crimson {
+    @apply bg-crimson border-6 border-golden-title rounded-3xl shadow-retro p-6 text-cream transition-all duration-200;
+  }
+
+  .retro-panel-emerald {
+    @apply bg-emerald border-6 border-golden-title rounded-3xl shadow-retro p-6 text-cream transition-all duration-200;
+  }
+
+  .retro-panel-yellow {
+    @apply bg-less-golden border-6 border-golden-title rounded-3xl shadow-retro p-6 text-crimson transition-all duration-200;
+  }
+
+  .retro-panel-cream {
+    @apply bg-cream border-6 border-golden-title rounded-3xl shadow-retro p-6 text-crimson transition-all duration-200;
+  }
+
+  .retro-panel-guayaba {
+    @apply bg-guayaba border-6 border-golden-title rounded-3xl shadow-retro p-6 text-crimson transition-all duration-200;
+  }
+
+  /* Interactive Buttons with Cartoon Accent Outlines */
+  .retro-btn-yellow {
+    @apply bg-golden-title text-crimson font-extrabold border-4 border-black rounded-2xl px-6 py-3 shadow-retro-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:bg-goldenrod active:scale-95 transition-all duration-150 text-center;
+  }
+
+  .retro-btn-crimson {
+    @apply bg-crimson text-cream font-extrabold border-4 border-black rounded-2xl px-6 py-3 shadow-retro-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:bg-red-800 active:scale-95 transition-all duration-150 text-center;
+  }
+
+  .retro-btn-emerald {
+    @apply bg-emerald text-cream font-extrabold border-4 border-black rounded-2xl px-6 py-3 shadow-retro-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:bg-emerald/80 active:scale-95 transition-all duration-150 text-center;
+  }
+
+  /* Retro Inputs */
+  .retro-input {
+    @apply bg-cream text-crimson placeholder-crimson/50 font-bold border-4 border-black rounded-2xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-golden-title transition-all duration-150 w-full;
+  }
+
+  /* Comic Nav Link */
+  .retro-nav-link {
+    @apply text-cream font-extrabold text-lg px-4 py-2 rounded-xl transition-all duration-150 hover:bg-golden-title hover:text-crimson hover:shadow-retro-sm hover:-translate-y-0.5 active:scale-95;
+  }
+
+  .retro-nav-link-active {
+    @apply bg-golden-title text-crimson font-black text-lg px-4 py-2 rounded-xl shadow-retro-sm border-2 border-black;
+  }
+
+  /* Scrollbars for premium retro feel */
+  .retro-scrollbar::-webkit-scrollbar {
+    width: 12px;
+  }
+  .retro-scrollbar::-webkit-scrollbar-track {
+    @apply bg-emerald border-l-4 border-black;
+  }
+  .retro-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-golden-title border-4 border-black rounded-full;
+  }
+}
