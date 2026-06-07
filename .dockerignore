@@ -1,0 +1,17 @@
+# Exclude local build output and dependencies
+node_modules/
+dist/
+
+# Exclude local debugging and runner configurations
+launch.js
+.vscode/
+
+# Exclude Git configurations
+.git/
+.gitignore
+
+# Exclude agent / developer temp directories
+.agents/
+.gemini/
+tmp/
+*.log
