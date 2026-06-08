@@ -37,9 +37,14 @@
             class="retro-input !bg-cream/90"
           >
             <option value="Todos">Todas las Categorías</option>
-            <option value="Cuidado Personal">Cuidado Personal</option>
-            <option value="Alimentos">Alimentos</option>
-            <option value="Aceites Esenciales">Aceites Esenciales</option>
+            <option value="Pasabocas y Golosinas">Pasabocas y Golosinas</option>
+            <option value="Frutas">Frutas</option>
+            <option value="Helados">Helados</option>
+            <option value="Jugos Naturales">Jugos Naturales</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Sanduches">Sanduches</option>
+            <option value="Adiciones">Adiciones</option>
+            <option value="Desechables">Desechables</option>
           </select>
         </div>
       </div>
@@ -59,10 +64,9 @@
               {{ product.category }}
             </span>
             <span 
-              class="border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase"
-              :class="product.stock <= 5 ? 'bg-crimson text-cream animate-pulse' : 'bg-emerald text-cream'"
+              class="border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase bg-emerald text-cream"
             >
-              Stock: {{ product.stock }} {{ product.stock <= 5 ? '¡Bajo!' : '' }}
+              Stock: {{ product.stock }}
             </span>
           </div>
           
@@ -150,9 +154,14 @@
                   v-model="formModel.category"
                   class="retro-input"
                 >
-                  <option value="Cuidado Personal">Cuidado Personal</option>
-                  <option value="Alimentos">Alimentos</option>
-                  <option value="Aceites Esenciales">Aceites Esenciales</option>
+                  <option value="Pasabocas y Golosinas">Pasabocas y Golosinas</option>
+                  <option value="Frutas">Frutas</option>
+                  <option value="Helados">Helados</option>
+                  <option value="Jugos Naturales">Jugos Naturales</option>
+                  <option value="Bebidas">Bebidas</option>
+                  <option value="Sanduches">Sanduches</option>
+                  <option value="Adiciones">Adiciones</option>
+                  <option value="Desechables">Desechables</option>
                 </select>
               </div>
 
@@ -173,11 +182,10 @@
                   <label for="p-stock" class="block text-golden-title font-extrabold text-sm mb-1">Cantidad (Stock)</label>
                   <input
                     id="p-stock"
-                    v-model.number="formModel.stock"
-                    type="number"
-                    min="0"
-                    class="retro-input"
-                    required
+                    type="text"
+                    value="Inicializado en 0"
+                    class="retro-input bg-gray-200 cursor-not-allowed text-gray-500"
+                    disabled
                   />
                 </div>
               </div>
@@ -211,52 +219,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import type { Product } from '../types';
+import { api } from '../services/api';
 
-// Mock Products list based on real Ayurami vibe
-const products = ref<Product[]>([
-  {
-    id: 'prod_1',
-    name: 'Miel de Abeja de Floración Orgánica',
-    price: 15.50,
-    stock: 24,
-    category: 'Alimentos',
-    description: 'Miel 100% natural, recolectada de campos libres de pesticidas, con notas florales intensas y endulzado saludable.'
-  },
-  {
-    id: 'prod_2',
-    name: 'Shampoo Sólido de Romero y Ortiga',
-    price: 9.99,
-    stock: 4,
-    category: 'Cuidado Personal',
-    description: 'Estimula el crecimiento folicular, regula la grasa del cuero cabelludo y deja un aroma refrescante a romero.'
-  },
-  {
-    id: 'prod_3',
-    name: 'Crema Hidratante Facial Aloe Vera & Karité',
-    price: 18.00,
-    stock: 12,
-    category: 'Cuidado Personal',
-    description: 'Perfecta para calmar pieles sensibles, hidratar en profundidad sin dejar sensación grasa y regenerar la dermis.'
-  },
-  {
-    id: 'prod_4',
-    name: 'Aceite Esencial Puro de Lavanda',
-    price: 12.50,
-    stock: 3,
-    category: 'Aceites Esenciales',
-    description: 'Ideal para aromaterapia, promueve la relajación, el sueño reparador y calma picaduras e irritaciones cutáneas.'
-  },
-  {
-    id: 'prod_5',
-    name: 'Polen de Flores Silvestres Seco',
-    price: 8.50,
-    stock: 15,
-    category: 'Alimentos',
-    description: 'Excelente energizante natural rico en proteínas, aminoácidos libres y complejo vitamínico B. Perfecto para desayunos.'
-  }
-]);
+const CATEGORY_MAP: Record<number, string> = {
+  1: 'Pasabocas y Golosinas',
+  2: 'Frutas',
+  3: 'Helados',
+  4: 'Jugos Naturales',
+  5: 'Bebidas',
+  6: 'Sanduches',
+  7: 'Adiciones',
+  8: 'Desechables'
+};
+
+const REVERSE_CATEGORY_MAP: Record<string, number> = {
+  'Pasabocas y Golosinas': 1,
+  'Frutas': 2,
+  'Helados': 3,
+  'Jugos Naturales': 4,
+  'Bebidas': 5,
+  'Sanduches': 6,
+  'Adiciones': 7,
+  'Desechables': 8
+};
+
+const products = ref<Product[]>([]);
 
 // Controls
 const searchQuery = ref('');
@@ -269,12 +258,32 @@ const formError = ref('');
 const initialFormState = (): Product => ({
   id: '',
   name: '',
-  category: 'Cuidado Personal',
+  category: 'Pasabocas y Golosinas',
   price: 0.0,
   stock: 0,
   description: ''
 });
 const formModel = ref<Product>(initialFormState());
+
+const fetchProducts = async () => {
+  try {
+    const rawProducts = await api.get<any[]>('/api/v1/products');
+    products.value = rawProducts.map(p => ({
+      id: String(p.id),
+      name: p.name,
+      price: p.sellPrice || 0,
+      stock: 0,
+      category: CATEGORY_MAP[p.categoryId] || 'Pasabocas y Golosinas',
+      description: p.description || ''
+    }));
+  } catch (err: any) {
+    console.error('Error fetching products:', err);
+  }
+};
+
+onMounted(() => {
+  fetchProducts();
+});
 
 // Filtered Computed Lists
 const filteredProducts = computed(() => {
@@ -300,14 +309,18 @@ const editProduct = (product: Product) => {
   showForm.value = true;
 };
 
-const deleteProduct = (id: string) => {
+const deleteProduct = async (id: string) => {
   if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-    products.value = products.value.filter(p => p.id !== id);
+    try {
+      await api.delete(`/api/v1/products/${id}`);
+      await fetchProducts();
+    } catch (err: any) {
+      alert('Error al eliminar producto: ' + err.message);
+    }
   }
 };
 
-const saveProduct = () => {
-  // Simple validation
+const saveProduct = async () => {
   const model = formModel.value;
   if (!model.name.trim()) {
     formError.value = 'El nombre del producto es obligatorio.';
@@ -317,42 +330,33 @@ const saveProduct = () => {
     formError.value = 'El precio debe ser un número mayor a cero.';
     return;
   }
-  if (model.stock < 0) {
-    formError.value = 'La cantidad de inventario no puede ser negativa.';
-    return;
-  }
   if (!model.description.trim()) {
     formError.value = 'La descripción es obligatoria.';
     return;
   }
 
-  if (isEditing.value) {
-    // Update
-    const index = products.value.findIndex(p => p.id === model.id);
-    if (index !== -1) {
-      products.value[index] = {
-        ...products.value[index],
-        name: model.name,
-        category: model.category,
-        price: model.price,
-        stock: model.stock,
-        description: model.description
-      };
-    }
-  } else {
-    // Create
-    const newProduct: Product = {
-      id: 'prod_' + (Date.now()),
+  try {
+    const payload = {
       name: model.name,
-      category: model.category,
-      price: model.price,
-      stock: model.stock,
-      description: model.description
+      description: model.description || '',
+      categoryId: REVERSE_CATEGORY_MAP[model.category] || 1,
+      unitOfMeasureId: 1, // 'Unidad'
+      sellPrice: model.price,
+      averageCost: 0.0,
+      isForSale: true,
+      requiresRecipe: false
     };
-    products.value.push(newProduct);
-  }
 
-  closeForm();
+    if (isEditing.value) {
+      await api.put(`/api/v1/products/${model.id}`, payload);
+    } else {
+      await api.post('/api/v1/products', payload);
+    }
+    await fetchProducts();
+    closeForm();
+  } catch (err: any) {
+    formError.value = err.message || 'Error al guardar el producto.';
+  }
 };
 </script>
 

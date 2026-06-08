@@ -28,13 +28,13 @@
       <form @submit.prevent="handleLogin" class="space-y-5">
         <div>
           <label for="email" class="block text-crimson font-extrabold text-lg mb-2">
-            Correo Electrónico
+            Usuario
           </label>
           <input
             id="email"
             v-model="email"
-            type="email"
-            placeholder="ejemplo@ayurami.com"
+            type="text"
+            placeholder="ej. admin"
             class="retro-input"
             :disabled="isLoading"
             required
@@ -54,13 +54,6 @@
             :disabled="isLoading"
             required
           />
-        </div>
-
-        <!-- Help Info in Comic style -->
-        <div class="bg-less-golden/50 border-2 border-black border-dashed rounded-xl p-3 text-sm font-semibold text-crimson/80">
-          💡 <span class="font-bold">Credenciales de prueba:</span><br/>
-          Usuario: <code class="font-mono text-black font-bold">admin@ayurami.com</code><br/>
-          Clave: <code class="font-mono text-black font-bold">admin123</code>
         </div>
 
         <!-- Submit Button -->
@@ -91,43 +84,80 @@
 <script setup lang="ts">
 import { ref, defineEmits } from 'vue';
 import type { Session, User } from '../types';
+import { api } from '../services/api';
 
 const emit = defineEmits<{
   (e: 'login-success', session: Session): void;
-}>();
+ }>();
 
 const email = ref('');
 const password = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
 
-const handleLogin = () => {
+// Custom JWT payload decoder
+function parseJwt(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
+const handleLogin = async () => {
   isLoading.value = true;
   errorMessage.value = '';
 
-  // Simulate API delay of 1 second
-  setTimeout(() => {
-    if (email.value === 'admin@ayurami.com' && password.value === 'admin123') {
-      const mockUser: User = {
-        id: 'usr_1',
-        name: 'Administrador Ayurami',
-        email: email.value,
-        role: 'Administrador',
-        status: 'Activo',
-        avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=ayurami'
-      };
+  try {
+    const response = await api.post<{ token: string }>('/login', {
+      username: email.value,
+      password: password.value
+    });
 
-      const mockSession: Session = {
-        token: 'mock_jwt_token_xyz_123',
-        user: mockUser
-      };
-
-      isLoading.value = false;
-      emit('login-success', mockSession);
-    } else {
-      isLoading.value = false;
-      errorMessage.value = 'El correo electrónico o la contraseña son incorrectos.';
+    const token = response.token;
+    const claims = parseJwt(token);
+    if (!claims) {
+      throw new Error('El token recibido del servidor no es válido.');
     }
-  }, 1000);
+
+    // Map backend role to frontend display role
+    const backendRole = claims.role;
+    let displayRole = 'Cliente';
+    if (backendRole === 'ayurami-admin') {
+      displayRole = 'Administrador';
+    } else if (backendRole === 'ayurami-salesperson') {
+      displayRole = 'Vendedor';
+    }
+
+    const authenticatedUser: User = {
+      id: String(claims.id),
+      name: claims.username === 'admin' ? 'Administrador Ayurami' : claims.username,
+      email: claims.username.includes('@') ? claims.username : `${claims.username}@ayurami.com`,
+      username: claims.username,
+      role: displayRole,
+      status: 'Activo',
+      avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${claims.username}`
+    };
+
+    const session: Session = {
+      token,
+      user: authenticatedUser
+    };
+
+    emit('login-success', session);
+  } catch (err: any) {
+    console.error('Error logging in:', err);
+    errorMessage.value = err.message || 'El usuario o la contraseña son incorrectos.';
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>

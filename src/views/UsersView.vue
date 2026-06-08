@@ -25,7 +25,7 @@
             id="search-user"
             v-model="searchQuery"
             type="text"
-            placeholder="Filtrar por nombre o correo..."
+            placeholder="Filtrar por nombre o usuario..."
             class="retro-input !bg-cream/90"
           />
         </div>
@@ -39,7 +39,6 @@
             <option value="Todos">Todos los Roles</option>
             <option value="Administrador">Administrador</option>
             <option value="Vendedor">Vendedor</option>
-            <option value="Cliente">Cliente</option>
           </select>
         </div>
       </div>
@@ -56,7 +55,7 @@
           <!-- User header card with avatar -->
           <div class="flex items-center gap-4 mb-4">
             <img
-              :src="user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + user.name"
+              :src="user.avatar || 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + user.username"
               alt="User Avatar"
               class="h-16 w-16 rounded-full border-4 border-black bg-cream p-1 shrink-0"
             />
@@ -65,7 +64,7 @@
                 {{ user.name }}
               </h3>
               <p class="text-black/70 font-semibold text-sm truncate">
-                {{ user.email }}
+                @{{ user.username }}
               </p>
             </div>
           </div>
@@ -77,8 +76,7 @@
               class="border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase"
               :class="{
                 'bg-crimson text-cream': user.role === 'Administrador',
-                'bg-goldenrod text-black': user.role === 'Vendedor',
-                'bg-sky-blue text-cream': user.role === 'Cliente'
+                'bg-goldenrod text-black': user.role === 'Vendedor'
               }"
             >
               {{ user.role }}
@@ -143,7 +141,7 @@
               ⚠️ {{ formError }}
             </div>
 
-            <form class="space-y-4">
+            <form class="space-y-4" @submit.prevent>
               <div>
                 <label for="u-name" class="block text-golden-title font-extrabold text-sm mb-1">Nombre Completo</label>
                 <input
@@ -157,14 +155,28 @@
               </div>
 
               <div>
-                <label for="u-email" class="block text-golden-title font-extrabold text-sm mb-1">Correo Electrónico</label>
+                <label for="u-username" class="block text-golden-title font-extrabold text-sm mb-1">Nombre de Usuario</label>
                 <input
-                  id="u-email"
-                  v-model="formModel.email"
-                  type="email"
-                  placeholder="ej. dmedina@ayurami.com"
+                  id="u-username"
+                  v-model="formModel.username"
+                  type="text"
+                  placeholder="ej. dmedina"
                   class="retro-input"
                   required
+                />
+              </div>
+
+              <div>
+                <label for="u-password" class="block text-golden-title font-extrabold text-sm mb-1">
+                  Contraseña {{ isEditing ? '(dejar en blanco para no cambiar)' : '' }}
+                </label>
+                <input
+                  id="u-password"
+                  v-model="formModel.password"
+                  type="password"
+                  placeholder="••••••••"
+                  class="retro-input"
+                  :required="!isEditing"
                 />
               </div>
 
@@ -178,7 +190,6 @@
                   >
                     <option value="Administrador">Administrador</option>
                     <option value="Vendedor">Vendedor</option>
-                    <option value="Cliente">Cliente</option>
                   </select>
                 </div>
                 <div>
@@ -211,44 +222,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import type { User } from '../types';
+import { api } from '../services/api';
 
-// Mock Users list
-const users = ref<User[]>([
-  {
-    id: 'usr_1',
-    name: 'Daniel Medina',
-    email: 'admin@ayurami.com',
-    role: 'Administrador',
-    status: 'Activo',
-    avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Daniel'
-  },
-  {
-    id: 'usr_2',
-    name: 'Camila Torres',
-    email: 'ctorres@ayurami.com',
-    role: 'Vendedor',
-    status: 'Activo',
-    avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Camila'
-  },
-  {
-    id: 'usr_3',
-    name: 'Alejandro Ruiz',
-    email: 'aruiz@ayurami.com',
-    role: 'Vendedor',
-    status: 'Activo',
-    avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Alejandro'
-  },
-  {
-    id: 'usr_4',
-    name: 'Lucía Fernández',
-    email: 'lfernandez@gmail.com',
-    role: 'Cliente',
-    status: 'Inactivo',
-    avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Lucia'
-  }
-]);
+const users = ref<User[]>([]);
 
 // Controls
 const searchQuery = ref('');
@@ -262,16 +240,39 @@ const initialFormState = (): User => ({
   id: '',
   name: '',
   email: '',
+  username: '',
   role: 'Vendedor',
-  status: 'Activo'
+  status: 'Activo',
+  password: ''
 });
 const formModel = ref<User>(initialFormState());
+
+const fetchUsers = async () => {
+  try {
+    const rawUsers = await api.get<any[]>('/api/v1/users');
+    users.value = rawUsers.map(u => ({
+      id: String(u.id),
+      name: u.fullName,
+      email: u.username + '@ayurami.com',
+      username: u.username,
+      role: u.role === 'ayurami-admin' ? 'Administrador' : 'Vendedor',
+      status: u.isActive ? 'Activo' : 'Inactivo',
+      avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + u.username
+    }));
+  } catch (err: any) {
+    console.error('Error fetching users:', err);
+  }
+};
+
+onMounted(() => {
+  fetchUsers();
+});
 
 // Filtered Computed Lists
 const filteredUsers = computed(() => {
   return users.value.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                          u.email.toLowerCase().includes(searchQuery.value.toLowerCase());
+                          u.username.toLowerCase().includes(searchQuery.value.toLowerCase());
     const matchesRole = selectedRole.value === 'Todos' || u.role === selectedRole.value;
     return matchesSearch && matchesRole;
   });
@@ -287,59 +288,62 @@ const closeForm = () => {
 
 const editUser = (user: User) => {
   isEditing.value = true;
-  formModel.value = { ...user };
+  formModel.value = { ...user, password: '' };
   showForm.value = true;
 };
 
-const deleteUser = (id: string) => {
-  if (id === 'usr_1') {
+const deleteUser = async (id: string) => {
+  // Check if trying to delete default admin
+  const userToDelete = users.value.find(u => u.id === id);
+  if (userToDelete && userToDelete.username === 'admin') {
     alert('No se puede eliminar el administrador principal del sistema.');
     return;
   }
+
   if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
-    users.value = users.value.filter(u => u.id !== id);
+    try {
+      await api.delete(`/api/v1/users/${id}`);
+      await fetchUsers();
+    } catch (err: any) {
+      alert('Error al eliminar usuario: ' + err.message);
+    }
   }
 };
 
-const saveUser = () => {
+const saveUser = async () => {
   const model = formModel.value;
-  // Simple validation
   if (!model.name.trim()) {
     formError.value = 'El nombre es obligatorio.';
     return;
   }
-  if (!model.email.trim() || !model.email.includes('@')) {
-    formError.value = 'Introduce un correo electrónico válido.';
+  if (!model.username || !model.username.trim()) {
+    formError.value = 'El nombre de usuario es obligatorio.';
+    return;
+  }
+  if (!isEditing.value && !model.password) {
+    formError.value = 'La contraseña es obligatoria para nuevos usuarios.';
     return;
   }
 
-  if (isEditing.value) {
-    // Update
-    const index = users.value.findIndex(u => u.id === model.id);
-    if (index !== -1) {
-      users.value[index] = {
-        ...users.value[index],
-        name: model.name,
-        email: model.email,
-        role: model.role,
-        status: model.status,
-        avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + encodeURIComponent(model.name)
-      };
-    }
-  } else {
-    // Create
-    const newUser: User = {
-      id: 'usr_' + Date.now(),
-      name: model.name,
-      email: model.email,
-      role: model.role,
-      status: model.status,
-      avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + encodeURIComponent(model.name)
+  try {
+    const payload = {
+      fullName: model.name,
+      username: model.username,
+      role: model.role === 'Administrador' ? 'ayurami-admin' : 'ayurami-salesperson',
+      isActive: model.status === 'Activo',
+      password: model.password || ''
     };
-    users.value.push(newUser);
-  }
 
-  closeForm();
+    if (isEditing.value) {
+      await api.put(`/api/v1/users/${model.id}`, payload);
+    } else {
+      await api.post('/api/v1/users', payload);
+    }
+    await fetchUsers();
+    closeForm();
+  } catch (err: any) {
+    formError.value = err.message || 'Error al guardar el usuario.';
+  }
 };
 </script>
 
