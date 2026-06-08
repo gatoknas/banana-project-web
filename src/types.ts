@@ -12,8 +12,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'Administrador' | 'Vendedor' | 'Cliente';
-  status: 'Activo' | 'Inactivo';
+  username?: string;
+  role: 'ayurami-admin' | 'ayurami-salesperson' | 'Administrador' | 'Vendedor' | 'Cliente' | string;
+  status: 'Activo' | 'Inactivo' | string;
   avatar?: string;
 }
 
