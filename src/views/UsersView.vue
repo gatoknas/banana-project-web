@@ -45,7 +45,7 @@
     </div>
 
     <!-- Users Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="!isLoading && filteredUsers.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="user in filteredUsers"
         :key="user.id"
@@ -109,8 +109,17 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="retro-panel-yellow text-center py-12 flex flex-col items-center justify-center gap-4">
+      <div class="relative w-16 h-16">
+        <div class="w-16 h-16 rounded-full border-8 border-crimson/20 border-t-8 border-t-crimson animate-spin"></div>
+        <div class="absolute inset-0 m-auto w-4 h-4 bg-golden-title rounded-full border-2 border-black"></div>
+      </div>
+      <p class="text-2xl font-black text-crimson uppercase tracking-wider animate-pulse">Cargando...</p>
+    </div>
+
     <!-- Empty State -->
-    <div v-if="filteredUsers.length === 0" class="retro-panel-yellow text-center py-12">
+    <div v-if="!isLoading && filteredUsers.length === 0" class="retro-panel-yellow text-center py-12">
       <p class="text-2xl font-black text-crimson uppercase mb-2">No se encontraron usuarios</p>
       <p class="font-bold text-crimson/80">Intenta cambiando los términos de búsqueda o filtros de rol.</p>
     </div>
@@ -227,6 +236,7 @@ import type { User } from '../types';
 import { api } from '../services/api';
 
 const users = ref<User[]>([]);
+const isLoading = ref(true);
 
 // Controls
 const searchQuery = ref('');
@@ -248,6 +258,7 @@ const initialFormState = (): User => ({
 const formModel = ref<User>(initialFormState());
 
 const fetchUsers = async () => {
+  isLoading.value = true;
   try {
     const rawUsers = await api.get<any[]>('/api/v1/users');
     users.value = rawUsers.map(u => ({
@@ -261,6 +272,8 @@ const fetchUsers = async () => {
     }));
   } catch (err: any) {
     console.error('Error fetching users:', err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
