@@ -51,7 +51,7 @@
     </div>
 
     <!-- Products Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="!isLoading && filteredProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="product in filteredProducts"
         :key="product.id"
@@ -102,8 +102,17 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="retro-panel-yellow text-center py-12 flex flex-col items-center justify-center gap-4">
+      <div class="relative w-16 h-16">
+        <div class="w-16 h-16 rounded-full border-8 border-crimson/20 border-t-8 border-t-crimson animate-spin"></div>
+        <div class="absolute inset-0 m-auto w-4 h-4 bg-golden-title rounded-full border-2 border-black"></div>
+      </div>
+      <p class="text-2xl font-black text-crimson uppercase tracking-wider animate-pulse">Cargando...</p>
+    </div>
+
     <!-- Empty State -->
-    <div v-if="filteredProducts.length === 0" class="retro-panel-yellow text-center py-12">
+    <div v-if="!isLoading && filteredProducts.length === 0" class="retro-panel-yellow text-center py-12">
       <p class="text-2xl font-black text-crimson uppercase mb-2">No se encontraron productos</p>
       <p class="font-bold text-crimson/80">Intenta cambiando los términos de búsqueda o filtros.</p>
     </div>
@@ -246,6 +255,7 @@ const REVERSE_CATEGORY_MAP: Record<string, number> = {
 };
 
 const products = ref<Product[]>([]);
+const isLoading = ref(true);
 
 // Controls
 const searchQuery = ref('');
@@ -266,6 +276,7 @@ const initialFormState = (): Product => ({
 const formModel = ref<Product>(initialFormState());
 
 const fetchProducts = async () => {
+  isLoading.value = true;
   try {
     const rawProducts = await api.get<any[]>('/api/v1/products');
     products.value = rawProducts.map(p => ({
@@ -278,6 +289,8 @@ const fetchProducts = async () => {
     }));
   } catch (err: any) {
     console.error('Error fetching products:', err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
