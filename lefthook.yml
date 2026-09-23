@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    secret-scan:
+      run: python ./scripts/secret_scanner.py
+    lint:
+      run: npm run lint
