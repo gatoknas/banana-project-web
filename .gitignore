@@ -27,3 +27,8 @@ pnpm-debug.log*
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Kilo AI plans and worktrees
+.kilo/plans/
+.kilo/worktrees/
+
