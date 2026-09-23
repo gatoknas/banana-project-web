@@ -79,7 +79,7 @@
                 </h3>
               </div>
               <div class="mt-4 flex items-baseline">
-                <span class="text-5xl font-black text-goldenrod">$12,670</span>
+                <span class="text-5xl font-black text-goldenrod">{{ formatCOP(12670) }}</span>
                 <span class="ml-2 text-xs font-bold text-cream/70">+12% este mes</span>
               </div>
             </div>
@@ -221,6 +221,7 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue';
 import type { Session } from '../types';
+import { formatCOP } from '../utils/currency';
 import ProductsView from './ProductsView.vue';
 import UsersView from './UsersView.vue';
 

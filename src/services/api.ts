@@ -1,27 +1,24 @@
 import type { Session } from '../types';
 
 const getBaseUrl = (): string => {
-  // Check if VUE_APP_API_URL is configured (e.g., in local .env files or during build time)
-  let url = process.env.VUE_APP_API_URL;
+  // An explicit URL (e.g. remote API) always wins and bypasses the dev proxy.
+  const configured = process.env.VUE_APP_API_URL;
+  if (configured) {
+    return configured.endsWith('/') ? configured.slice(0, -1) : configured;
+  }
 
-  if (!url && typeof window !== 'undefined') {
+  if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    // If running locally, default to the local backend port
+    // Local dev: stay same-origin so vue.config.js devServer.proxy forwards to the Go API.
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      url = 'http://localhost:8082';
-    } else {
-      // Deployed web app domain targeting the production Go API
-      url = 'https://api.ayurami.com';
+      return '';
     }
+    // Deployed web app domain targeting the production Go API
+    return 'https://api.ayurami.com';
   }
 
-  // Final fallback if no environment variable or window context exists
-  if (!url) {
-    url = 'http://localhost:8082';
-  }
-
-  // Strip trailing slash if present to avoid double slash routes like /api/v1//login
-  return url.endsWith('/') ? url.slice(0, -1) : url;
+  // No env variable and no window context: assume same-origin.
+  return '';
 };
 
 const BASE_URL = getBaseUrl();

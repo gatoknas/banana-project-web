@@ -37,14 +37,9 @@
             class="retro-input !bg-cream/90"
           >
             <option value="Todos">Todas las Categorías</option>
-            <option value="Pasabocas y Golosinas">Pasabocas y Golosinas</option>
-            <option value="Frutas">Frutas</option>
-            <option value="Helados">Helados</option>
-            <option value="Jugos Naturales">Jugos Naturales</option>
-            <option value="Bebidas">Bebidas</option>
-            <option value="Sanduches">Sanduches</option>
-            <option value="Adiciones">Adiciones</option>
-            <option value="Desechables">Desechables</option>
+            <option v-for="cat in categories" :key="cat.id" :value="cat.name">
+              {{ cat.name }}
+            </option>
           </select>
         </div>
       </div>
@@ -81,7 +76,7 @@
         <div class="mt-4 pt-4 border-t-2 border-black/10">
           <div class="flex justify-between items-center mb-4">
             <span class="text-xs text-crimson/70 font-black uppercase">Precio</span>
-            <span class="text-3xl font-black text-crimson">${{ product.price.toFixed(2) }}</span>
+            <span class="text-3xl font-black text-crimson">{{ formatCOP(product.price) }}</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
@@ -160,17 +155,12 @@
                 <label for="p-category" class="block text-golden-title font-extrabold text-sm mb-1">Categoría</label>
                 <select
                   id="p-category"
-                  v-model="formModel.category"
+                  v-model="formModel.categoryId"
                   class="retro-input"
                 >
-                  <option value="Pasabocas y Golosinas">Pasabocas y Golosinas</option>
-                  <option value="Frutas">Frutas</option>
-                  <option value="Helados">Helados</option>
-                  <option value="Jugos Naturales">Jugos Naturales</option>
-                  <option value="Bebidas">Bebidas</option>
-                  <option value="Sanduches">Sanduches</option>
-                  <option value="Adiciones">Adiciones</option>
-                  <option value="Desechables">Desechables</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                    {{ cat.name }}
+                  </option>
                 </select>
               </div>
 
@@ -229,31 +219,23 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import type { Product } from '../types';
+import type { Product, Category } from '../types';
 import { api } from '../services/api';
+import { formatCOP } from '../utils/currency';
 
-const CATEGORY_MAP: Record<number, string> = {
-  1: 'Pasabocas y Golosinas',
-  2: 'Frutas',
-  3: 'Helados',
-  4: 'Jugos Naturales',
-  5: 'Bebidas',
-  6: 'Sanduches',
-  7: 'Adiciones',
-  8: 'Desechables'
-};
+const DEFAULT_CATEGORIES: Category[] = [
+  { id: 1, name: 'Pasabocas y Golosinas' },
+  { id: 2, name: 'Frutas' },
+  { id: 3, name: 'Helados' },
+  { id: 4, name: 'Jugos Naturales' },
+  { id: 5, name: 'Bebidas' },
+  { id: 6, name: 'Sanduches' },
+  { id: 7, name: 'Adiciones' },
+  { id: 8, name: 'Desechables' },
+  { id: 9, name: 'Cafeteria' }
+];
 
-const REVERSE_CATEGORY_MAP: Record<string, number> = {
-  'Pasabocas y Golosinas': 1,
-  'Frutas': 2,
-  'Helados': 3,
-  'Jugos Naturales': 4,
-  'Bebidas': 5,
-  'Sanduches': 6,
-  'Adiciones': 7,
-  'Desechables': 8
-};
-
+const categories = ref<Category[]>(DEFAULT_CATEGORIES);
 const products = ref<Product[]>([]);
 const isLoading = ref(true);
 
@@ -265,37 +247,74 @@ const isEditing = ref(false);
 const formError = ref('');
 
 // Form state
-const initialFormState = (): Product => ({
+interface ProductFormModel {
+  id: string;
+  name: string;
+  categoryId: number;
+  price: number;
+  stock: number;
+  description: string;
+}
+
+const initialFormState = (): ProductFormModel => ({
   id: '',
   name: '',
-  category: 'Pasabocas y Golosinas',
+  categoryId: categories.value.length > 0 ? categories.value[0].id : 1,
   price: 0.0,
   stock: 0,
   description: ''
 });
-const formModel = ref<Product>(initialFormState());
+const formModel = ref<ProductFormModel>(initialFormState());
+
+interface BackendProduct {
+  id: number;
+  name: string;
+  description?: string;
+  categoryId: number;
+  unitOfMeasureId: number;
+  sellPrice: number;
+  averageCost: number;
+  isForSale: boolean;
+  requiresRecipe: boolean;
+}
+
+const fetchCategories = async () => {
+  try {
+    const cats = await api.get<Category[]>('/api/v1/categories');
+    if (cats && cats.length > 0) {
+      categories.value = cats;
+    }
+  } catch (err) {
+    console.error('Error fetching categories, using defaults:', err);
+  }
+};
 
 const fetchProducts = async () => {
   isLoading.value = true;
   try {
-    const rawProducts = await api.get<any[]>('/api/v1/products');
-    products.value = rawProducts.map(p => ({
-      id: String(p.id),
-      name: p.name,
-      price: p.sellPrice || 0,
-      stock: 0,
-      category: CATEGORY_MAP[p.categoryId] || 'Pasabocas y Golosinas',
-      description: p.description || ''
-    }));
-  } catch (err: any) {
+    const rawProducts = await api.get<BackendProduct[]>('/api/v1/products');
+    products.value = rawProducts.map(p => {
+      const matchedCat = categories.value.find(c => c.id === p.categoryId);
+      return {
+        id: String(p.id),
+        name: p.name,
+        price: p.sellPrice || 0,
+        stock: 0,
+        categoryId: p.categoryId,
+        category: matchedCat ? matchedCat.name : 'Cafeteria',
+        description: p.description || ''
+      };
+    });
+  } catch (err) {
     console.error('Error fetching products:', err);
   } finally {
     isLoading.value = false;
   }
 };
 
-onMounted(() => {
-  fetchProducts();
+onMounted(async () => {
+  await fetchCategories();
+  await fetchProducts();
 });
 
 // Filtered Computed Lists
@@ -318,7 +337,15 @@ const closeForm = () => {
 
 const editProduct = (product: Product) => {
   isEditing.value = true;
-  formModel.value = { ...product };
+  const matchedCat = categories.value.find(c => c.name === product.category || c.id === product.categoryId);
+  formModel.value = {
+    id: product.id,
+    name: product.name,
+    categoryId: product.categoryId ?? matchedCat?.id ?? 1,
+    price: product.price,
+    stock: product.stock,
+    description: product.description
+  };
   showForm.value = true;
 };
 
@@ -327,8 +354,9 @@ const deleteProduct = async (id: string) => {
     try {
       await api.delete(`/api/v1/products/${id}`);
       await fetchProducts();
-    } catch (err: any) {
-      alert('Error al eliminar producto: ' + err.message);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error desconocido';
+      alert('Error al eliminar producto: ' + msg);
     }
   }
 };
@@ -352,7 +380,7 @@ const saveProduct = async () => {
     const payload = {
       name: model.name,
       description: model.description || '',
-      categoryId: REVERSE_CATEGORY_MAP[model.category] || 1,
+      categoryId: model.categoryId,
       unitOfMeasureId: 1, // 'Unidad'
       sellPrice: model.price,
       averageCost: 0.0,
@@ -367,8 +395,8 @@ const saveProduct = async () => {
     }
     await fetchProducts();
     closeForm();
-  } catch (err: any) {
-    formError.value = err.message || 'Error al guardar el producto.';
+  } catch (err) {
+    formError.value = err instanceof Error ? err.message : 'Error al guardar el producto.';
   }
 };
 </script>

@@ -1,9 +1,16 @@
+export interface Category {
+  id: number;
+  name: string;
+  createdAt?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
   price: number;
   stock: number;
   category: string;
+  categoryId?: number;
   description: string;
   image?: string;
 }
