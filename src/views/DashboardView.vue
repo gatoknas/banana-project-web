@@ -70,75 +70,8 @@
           <!-- Retro Panels Grid mirroring the Mobile App -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            <!-- TOTAL REVENUE CARD (Crimson Theme) -->
-            <div class="retro-panel-crimson flex flex-col justify-between min-h-[200px]">
-              <div>
-                <span class="text-xs tracking-wider font-black text-goldenrod uppercase">Ingresos Totales</span>
-                <h3 class="text-4xl font-extrabold mt-2 tracking-tight text-cream">
-                  TOTAL REVENUE
-                </h3>
-              </div>
-              <div class="mt-4 flex items-baseline">
-                <span class="text-5xl font-black text-goldenrod">{{ formatCOP(12670) }}</span>
-                <span class="ml-2 text-xs font-bold text-cream/70">+12% este mes</span>
-              </div>
-            </div>
-
-            <!-- VISITS CARD (Emerald / Dark Green Theme) -->
-            <div class="retro-panel-emerald flex flex-col justify-between min-h-[200px]">
-              <div>
-                <span class="text-xs tracking-wider font-black text-golden-title uppercase">Visitas</span>
-                <h3 class="text-4xl font-extrabold mt-2 tracking-tight text-cream">
-                  VISITS
-                </h3>
-              </div>
-              <!-- Simulated Wave Graph SVG matching the Mobile UI -->
-              <div class="h-20 w-full mt-4 bg-black/20 rounded-xl p-2 border-2 border-black/40 overflow-hidden relative">
-                <svg class="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
-                  <path
-                    d="M0,35 Q10,15 20,25 T40,15 T60,28 T80,12 T100,5 L100,40 L0,40 Z"
-                    fill="rgba(1, 106, 77, 0.4)"
-                  />
-                  <path
-                    d="M0,35 Q10,15 20,25 T40,15 T60,28 T80,12 T100,5"
-                    fill="none"
-                    stroke="#40E0D0"
-                    stroke-width="3"
-                    stroke-linecap="round"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <!-- TRAFFIC SOURCES CARD (Crimson Theme) -->
-            <div class="retro-panel-crimson flex flex-col justify-between min-h-[200px]">
-              <div>
-                <span class="text-xs tracking-wider font-black text-goldenrod uppercase font-black">Orígenes de Tráfico</span>
-                <h3 class="text-4xl font-extrabold mt-2 tracking-tight text-cream">
-                  TRAFFIC SOURCES
-                </h3>
-              </div>
-              <div class="flex items-center justify-between gap-4 mt-4">
-                <!-- Conic Gradient Pie Chart -->
-                <div class="h-20 w-20 rounded-full border-4 border-black shadow-retro-sm shrink-0" 
-                     style="background: conic-gradient(#b73301 0% 35%, #fab214 35% 65%, #40E0D0 65% 85%, #016a4d 85% 100%)">
-                </div>
-                <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs font-bold text-cream/95">
-                  <div class="flex items-center gap-1">
-                    <span class="w-2.5 h-2.5 bg-crimson border border-black inline-block rounded-full"></span> Directo (35%)
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <span class="w-2.5 h-2.5 bg-golden-title border border-black inline-block rounded-full"></span> Social (30%)
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <span class="w-2.5 h-2.5 bg-turquoise border border-black inline-block rounded-full"></span> Búsqueda (20%)
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <span class="w-2.5 h-2.5 bg-emerald border border-black inline-block rounded-full"></span> Otros (15%)
-                  </div>
-                </div>
-              </div>
-            </div>
+            <!-- INTERACTIVE TOTAL REVENUE CARD (Full width hero card) -->
+            <RevenueCard class="col-span-full" />
 
             <!-- UPDATE CARD (Folder-tab, Yellow Theme) -->
             <div class="lg:col-span-1 relative pt-6">
@@ -221,9 +154,9 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue';
 import type { Session } from '../types';
-import { formatCOP } from '../utils/currency';
 import ProductsView from './ProductsView.vue';
 import UsersView from './UsersView.vue';
+import RevenueCard from '../components/RevenueCard.vue';
 
 defineProps<{
   session: Session;

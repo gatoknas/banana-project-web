@@ -1,4 +1,4 @@
-import type { Session } from '../types';
+import type { Session, RevenueSummary, EmailReceipt } from '../types';
 
 const getBaseUrl = (): string => {
   // An explicit URL (e.g. remote API) always wins and bypasses the dev proxy.
@@ -114,3 +114,26 @@ export const api = {
     return handleResponse<T>(response);
   }
 };
+
+export const emailReceiptsApi = {
+  getRevenueSummary(from?: string, to?: string): Promise<RevenueSummary> {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return api.get<RevenueSummary>(`/api/v1/email-receipts/summary${query}`);
+  },
+
+  getEmailReceipts(from?: string, to?: string): Promise<EmailReceipt[]> {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return api.get<EmailReceipt[]>(`/api/v1/email-receipts${query}`);
+  },
+
+  syncEmailReceipts(from: string, to: string): Promise<{ status: string; message: string; result: { fetched: number; imported: number; skipped: number; errors: number } }> {
+    return api.post<{ status: string; message: string; result: { fetched: number; imported: number; skipped: number; errors: number } }>('/api/v1/email-receipts/sync', { from, to });
+  }
+};
+
