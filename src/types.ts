@@ -13,7 +13,66 @@ export interface Product {
   categoryId?: number;
   description: string;
   image?: string;
+  unitOfMeasureId?: number;
+  unitName?: string;
+  unitAbbreviation?: string;
+  currentStock?: number;
+  minimumStock?: number;
+  averageCost?: number;
 }
+
+export interface UnitOfMeasure {
+  id: number;
+  name: string;
+  abbreviation: string;
+  unitType: string;
+  createdAt?: string;
+}
+
+export interface PurchaseDetail {
+  id: number;
+  purchaseId: number;
+  productId: number;
+  productName?: string;
+  purchaseUnitId?: number;
+  purchaseUnitName?: string;
+  purchaseUnitAbbreviation?: string;
+  quantityPurchased: number;
+  conversionFactor: number;
+  baseQuantity: number;
+  unitCost: number;
+  subtotal: number;
+  createdAt?: string;
+}
+
+export interface Purchase {
+  id: number;
+  supplierId: number;
+  supplierName?: string;
+  invoiceNumber: string;
+  purchaseDate: string;
+  totalAmount: number;
+  notes?: string;
+  createdAt?: string;
+  details?: PurchaseDetail[];
+}
+
+export interface PurchaseItemRequest {
+  productId: number;
+  purchaseUnitId?: number;
+  quantityPurchased: number;
+  conversionFactor: number;
+  unitCost: number;
+}
+
+export interface PurchaseRequest {
+  supplierId: number;
+  invoiceNumber: string;
+  purchaseDate: string;
+  notes?: string;
+  items: PurchaseItemRequest[];
+}
+
 
 export interface User {
   id: string;
