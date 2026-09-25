@@ -38,6 +38,12 @@
             Compras
           </button>
           <button
+            @click="activeTab = 'ventas'"
+            :class="activeTab === 'ventas' ? 'retro-nav-link-active' : 'retro-nav-link'"
+          >
+            Ventas
+          </button>
+          <button
             @click="activeTab = 'users'"
             :class="activeTab === 'users' ? 'retro-nav-link-active' : 'retro-nav-link'"
           >
@@ -159,6 +165,11 @@
           <PurchasesView />
         </div>
 
+        <!-- Sales View Tab -->
+        <div v-else-if="activeTab === 'ventas'">
+          <SalesView />
+        </div>
+
         <!-- Users View Tab -->
         <div v-else-if="activeTab === 'users'">
           <UsersView />
@@ -180,6 +191,7 @@ import ProductsView from './ProductsView.vue';
 import UsersView from './UsersView.vue';
 import SuppliersView from './SuppliersView.vue';
 import PurchasesView from './PurchasesView.vue';
+import SalesView from './SalesView.vue';
 import RevenueCard from '../components/RevenueCard.vue';
 
 defineProps<{
@@ -190,7 +202,7 @@ const emit = defineEmits<{
   (e: 'logout'): void;
 }>();
 
-const activeTab = ref<'home' | 'products' | 'proveedores' | 'compras' | 'users'>('home');
+const activeTab = ref<'home' | 'products' | 'proveedores' | 'compras' | 'ventas' | 'users'>('home');
 
 const handleLogout = () => {
   emit('logout');
