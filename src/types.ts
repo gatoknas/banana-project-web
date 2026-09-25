@@ -198,4 +198,63 @@ export interface SaleFilter {
   userId?: number;
 }
 
+export interface DashboardKPIs {
+  todayRevenue: number;
+  todayTransactions: number;
+  averageTicket: number;
+  lowStockProducts: number;
+  monthPurchasesTotal: number;
+  activeUsers: number;
+}
+
+export interface SalesTimelineEntry {
+  date: string;
+  revenue: number;
+  count: number;
+}
+
+export interface PaymentMethodEntry {
+  method: string;
+  count: number;
+  amount: number;
+}
+
+export interface TopProductEntry {
+  productId: number;
+  productName: string;
+  totalQuantity: number;
+  totalRevenue: number;
+}
+
+export interface CategoryEntry {
+  categoryId: number;
+  categoryName: string;
+  totalRevenue: number;
+  count: number;
+}
+
+export interface PurchasesVsSalesEntry {
+  month: string;
+  purchases: number;
+  sales: number;
+}
+
+export interface InventoryAlertEntry {
+  productId: number;
+  productName: string;
+  currentStock: number;
+  minimumStock: number;
+  unit: string;
+}
+
+export interface DashboardStats {
+  kpis: DashboardKPIs;
+  salesTimeline: SalesTimelineEntry[];
+  paymentMethodBreakdown: PaymentMethodEntry[];
+  topProducts: TopProductEntry[];
+  categoryBreakdown: CategoryEntry[];
+  purchasesVsSales: PurchasesVsSalesEntry[];
+  inventoryAlerts: InventoryAlertEntry[];
+}
+
 
