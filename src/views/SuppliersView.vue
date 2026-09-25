@@ -49,7 +49,7 @@
               v-model="searchQuery"
               @input="onSearchInput"
               type="text"
-              placeholder="Filtrar por empresa, NIT/tax ID o contacto..."
+              placeholder="Filtrar por empresa, NIT, contacto o notas..."
               class="retro-input !bg-cream/90 pr-10"
             />
             <span
@@ -118,6 +118,15 @@
               <span class="text-crimson font-black text-xs uppercase w-20 shrink-0">Correo:</span>
               <span class="truncate">{{ supplier.email || 'No registrado' }}</span>
             </div>
+          </div>
+
+          <!-- Description / Notes -->
+          <div
+            v-if="supplier.description"
+            class="mt-3 p-2.5 bg-yellow-50/90 border-2 border-black/15 rounded-lg text-xs text-black/85 leading-relaxed"
+          >
+            <span class="font-black text-crimson uppercase text-[11px] block mb-1">Notas / Descripción:</span>
+            <p class="whitespace-pre-line break-words line-clamp-3">{{ supplier.description }}</p>
           </div>
         </div>
 
@@ -255,6 +264,19 @@
                   class="retro-input"
                 />
               </div>
+
+              <div>
+                <label for="s-description" class="block text-golden-title font-extrabold text-sm mb-1">
+                  Descripción / Notas <span class="text-xs text-cream/70 font-normal">(Opcional)</span>
+                </label>
+                <textarea
+                  id="s-description"
+                  v-model="formModel.description"
+                  rows="3"
+                  placeholder="ej. Proveedor preferencial de fruta fresca, entregas los martes..."
+                  class="retro-input resize-y"
+                ></textarea>
+              </div>
             </form>
           </div>
 
@@ -351,7 +373,8 @@ const initialFormState = (): SupplierRequest => ({
   contactName: '',
   phone: '',
   email: '',
-  taxId: ''
+  taxId: '',
+  description: ''
 });
 
 const formModel = ref<SupplierRequest>(initialFormState());
@@ -381,7 +404,8 @@ const filteredSuppliers = computed(() => {
     (s.companyName && s.companyName.toLowerCase().includes(query)) ||
     (s.taxId && s.taxId.toLowerCase().includes(query)) ||
     (s.contactName && s.contactName.toLowerCase().includes(query)) ||
-    (s.email && s.email.toLowerCase().includes(query))
+    (s.email && s.email.toLowerCase().includes(query)) ||
+    (s.description && s.description.toLowerCase().includes(query))
   );
 });
 
@@ -409,7 +433,8 @@ const editSupplier = (supplier: Supplier) => {
     contactName: supplier.contactName || '',
     phone: supplier.phone || '',
     email: supplier.email || '',
-    taxId: supplier.taxId || ''
+    taxId: supplier.taxId || '',
+    description: supplier.description || ''
   };
   formError.value = '';
   showForm.value = true;
@@ -441,7 +466,8 @@ const saveSupplier = async () => {
       phone: model.phone.trim(),
       contactName: model.contactName?.trim() || undefined,
       email: model.email?.trim() || undefined,
-      taxId: model.taxId && model.taxId.trim() ? model.taxId.trim() : null
+      taxId: model.taxId && model.taxId.trim() ? model.taxId.trim() : null,
+      description: model.description && model.description.trim() ? model.description.trim() : null
     };
 
     if (isEditing.value && editingId.value !== null) {

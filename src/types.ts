@@ -98,6 +98,7 @@ export interface Supplier {
   phone: string;
   email?: string;
   taxId?: string | null;
+  description?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -108,6 +109,7 @@ export interface SupplierRequest {
   phone: string;
   email?: string;
   taxId?: string | null;
+  description?: string | null;
 }
 
 export interface DailyRevenueBucket {
