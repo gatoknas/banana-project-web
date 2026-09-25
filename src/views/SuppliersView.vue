@@ -82,8 +82,17 @@
         <div>
           <!-- Badge and Tax ID -->
           <div class="flex justify-between items-start gap-2 mb-3">
-            <span class="bg-crimson text-cream border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase">
+            <span
+              v-if="supplier.taxId"
+              class="bg-crimson text-cream border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase"
+            >
               NIT: {{ supplier.taxId }}
+            </span>
+            <span
+              v-else
+              class="bg-black/20 text-black/70 border-2 border-black/30 rounded-lg px-2.5 py-0.5 text-xs font-black uppercase"
+            >
+              Sin NIT
             </span>
             <span class="border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase bg-emerald text-cream">
               ID #{{ supplier.id }}
@@ -195,8 +204,22 @@
               </div>
 
               <div>
+                <label for="s-phone" class="block text-golden-title font-extrabold text-sm mb-1">
+                  Teléfono <span class="text-crimson">*</span>
+                </label>
+                <input
+                  id="s-phone"
+                  v-model="formModel.phone"
+                  type="tel"
+                  placeholder="ej. +57 300 123 4567"
+                  class="retro-input"
+                  required
+                />
+              </div>
+
+              <div>
                 <label for="s-tax-id" class="block text-golden-title font-extrabold text-sm mb-1">
-                  NIT / Tax ID <span class="text-crimson">*</span>
+                  NIT / Tax ID <span class="text-xs text-cream/70 font-normal">(Opcional)</span>
                 </label>
                 <input
                   id="s-tax-id"
@@ -204,13 +227,12 @@
                   type="text"
                   placeholder="ej. 900123456-7"
                   class="retro-input"
-                  required
                 />
               </div>
 
               <div>
                 <label for="s-contact-name" class="block text-golden-title font-extrabold text-sm mb-1">
-                  Persona de Contacto
+                  Persona de Contacto <span class="text-xs text-cream/70 font-normal">(Opcional)</span>
                 </label>
                 <input
                   id="s-contact-name"
@@ -222,21 +244,8 @@
               </div>
 
               <div>
-                <label for="s-phone" class="block text-golden-title font-extrabold text-sm mb-1">
-                  Teléfono
-                </label>
-                <input
-                  id="s-phone"
-                  v-model="formModel.phone"
-                  type="tel"
-                  placeholder="ej. +57 300 123 4567"
-                  class="retro-input"
-                />
-              </div>
-
-              <div>
                 <label for="s-email" class="block text-golden-title font-extrabold text-sm mb-1">
-                  Correo Electrónico
+                  Correo Electrónico <span class="text-xs text-cream/70 font-normal">(Opcional)</span>
                 </label>
                 <input
                   id="s-email"
@@ -275,7 +284,7 @@
           <p class="text-black font-semibold text-sm mb-3">
             ¿Confirmas que deseas eliminar a 
             <span class="font-black text-crimson">"{{ supplierToDelete.companyName }}"</span> 
-            (NIT: {{ supplierToDelete.taxId }})?
+            {{ supplierToDelete.taxId ? `(NIT: ${supplierToDelete.taxId})` : '' }}?
           </p>
           <p class="text-xs text-black/70 mb-6 bg-yellow-100 p-2 border border-black/20 rounded">
             Nota: Si este proveedor cuenta con compras u órdenes registradas en el sistema, la eliminación será rechazada para mantener la integridad contable.
@@ -397,10 +406,10 @@ const editSupplier = (supplier: Supplier) => {
   editingId.value = supplier.id;
   formModel.value = {
     companyName: supplier.companyName,
-    contactName: supplier.contactName,
-    phone: supplier.phone,
-    email: supplier.email,
-    taxId: supplier.taxId
+    contactName: supplier.contactName || '',
+    phone: supplier.phone || '',
+    email: supplier.email || '',
+    taxId: supplier.taxId || ''
   };
   formError.value = '';
   showForm.value = true;
@@ -418,8 +427,8 @@ const saveSupplier = async () => {
     formError.value = 'La empresa / razón social es obligatoria.';
     return;
   }
-  if (!model.taxId.trim()) {
-    formError.value = 'El NIT / documento fiscal es obligatorio.';
+  if (!model.phone.trim()) {
+    formError.value = 'El número de teléfono es obligatorio.';
     return;
   }
 
@@ -429,10 +438,10 @@ const saveSupplier = async () => {
   try {
     const payload: SupplierRequest = {
       companyName: model.companyName.trim(),
-      contactName: model.contactName.trim(),
       phone: model.phone.trim(),
-      email: model.email.trim(),
-      taxId: model.taxId.trim()
+      contactName: model.contactName?.trim() || undefined,
+      email: model.email?.trim() || undefined,
+      taxId: model.taxId && model.taxId.trim() ? model.taxId.trim() : null
     };
 
     if (isEditing.value && editingId.value !== null) {

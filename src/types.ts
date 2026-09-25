@@ -94,20 +94,20 @@ export type ViewState = 'login' | 'dashboard' | 'products' | 'users' | 'proveedo
 export interface Supplier {
   id: number;
   companyName: string;
-  contactName: string;
+  contactName?: string;
   phone: string;
-  email: string;
-  taxId: string;
+  email?: string;
+  taxId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface SupplierRequest {
   companyName: string;
-  contactName: string;
+  contactName?: string;
   phone: string;
-  email: string;
-  taxId: string;
+  email?: string;
+  taxId?: string | null;
 }
 
 export interface DailyRevenueBucket {
