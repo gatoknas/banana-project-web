@@ -45,6 +45,17 @@ const props = defineProps<{
 const chartContainer = ref<HTMLDivElement | null>(null);
 let chartInstance: echarts.ECharts | null = null;
 let resizeObserver: ResizeObserver | null = null;
+let animationFrameId: number | null = null;
+
+const handleResize = () => {
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+  }
+  animationFrameId = requestAnimationFrame(() => {
+    chartInstance?.resize();
+    animationFrameId = null;
+  });
+};
 
 const initChart = () => {
   if (!chartContainer.value) return;
@@ -61,10 +72,10 @@ const initChart = () => {
     chartInstance.setOption(props.option, true);
   }
 
-  // Setup ResizeObserver for responsive resizing
+  // Setup ResizeObserver for responsive resizing using requestAnimationFrame
   if (typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(() => {
-      chartInstance?.resize();
+      handleResize();
     });
     resizeObserver.observe(chartContainer.value);
   }
@@ -87,6 +98,10 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
   if (resizeObserver && chartContainer.value) {
     resizeObserver.unobserve(chartContainer.value);
     resizeObserver.disconnect();
