@@ -152,12 +152,22 @@
                 {{ formatCOP(purchase.totalAmount) }}
               </td>
               <td class="py-3.5 px-4 text-center">
-                <button
-                  @click="viewPurchaseDetails(purchase.id)"
-                  class="retro-btn-emerald py-1 px-3 text-xs font-black uppercase border shadow-retro-sm"
-                >
-                  Ver Detalle
-                </button>
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="viewPurchaseDetails(purchase.id)"
+                    class="retro-btn-emerald py-1 px-2.5 text-xs font-black uppercase border shadow-retro-sm"
+                    title="Ver detalles de la compra"
+                  >
+                    Ver Detalle
+                  </button>
+                  <button
+                    @click="openEditModal(purchase.id)"
+                    class="retro-btn-yellow py-1 px-2.5 text-xs font-black uppercase border shadow-retro-sm"
+                    title="Editar compra y recalcular costos"
+                  >
+                    Editar
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -205,12 +215,20 @@
               </h3>
               <p class="text-xs font-bold text-black/70">Fecha: {{ formatDate(selectedPurchase.purchaseDate) }}</p>
             </div>
-            <button
-              @click="selectedPurchase = null"
-              class="retro-btn-crimson py-1 px-3 border-2 text-xs font-black uppercase shadow-retro-sm"
-            >
-              Cerrar
-            </button>
+            <div class="flex items-center gap-2">
+              <button
+                @click="editFromDetails(selectedPurchase)"
+                class="retro-btn-yellow py-1 px-3 border-2 text-xs font-black uppercase shadow-retro-sm"
+              >
+                Editar
+              </button>
+              <button
+                @click="selectedPurchase = null"
+                class="retro-btn-crimson py-1 px-3 border-2 text-xs font-black uppercase shadow-retro-sm"
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
 
           <div v-if="selectedPurchase.notes" class="mb-4 bg-yellow-100/80 p-3 rounded-lg border border-black/20 text-xs font-semibold text-black">
@@ -271,10 +289,10 @@
             <div class="flex justify-between items-center border-b-4 border-black pb-4 mb-6">
               <div>
                 <h3 class="text-2xl font-black text-golden-title uppercase tracking-wide">
-                  Registrar Nueva Compra
+                  {{ isEditing ? 'Editar Orden de Compra' : 'Registrar Nueva Compra' }}
                 </h3>
                 <p class="text-xs font-bold text-cream/80">
-                  Ingreso de insumos, factores de conversión y recálculo de costo promedio.
+                  {{ isEditing ? 'Modifica los productos, cantidades o costos. El stock y costo promedio se recalcularán automáticamente.' : 'Ingreso de insumos, factores de conversión y recálculo de costo promedio.' }}
                 </p>
               </div>
               <button
@@ -305,7 +323,7 @@
                   >
                     <option :value="0" disabled>Seleccionar proveedor...</option>
                     <option v-for="sup in suppliers" :key="sup.id" :value="sup.id">
-                      {{ sup.companyName }} ({{ sup.taxId }})
+                      {{ sup.companyName }}{{ sup.taxId ? ` (${sup.taxId})` : '' }}
                     </option>
                   </select>
                 </div>
@@ -505,7 +523,7 @@
               :class="{ 'opacity-50 cursor-not-allowed': isSubmitting }"
             >
               <span v-if="isSubmitting" class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-              <span>{{ isSubmitting ? 'Procesando entrada...' : 'Registrar Compra y Actualizar Stock' }}</span>
+              <span>{{ isSubmitting ? 'Procesando entrada...' : (isEditing ? 'Guardar Cambios y Recalcular Costos' : 'Registrar Compra y Actualizar Stock') }}</span>
             </button>
           </div>
         </div>
@@ -541,6 +559,8 @@ const selectedPurchase = ref<Purchase | null>(null);
 
 // Slide-Over Form State
 const showForm = ref(false);
+const isEditing = ref(false);
+const editingId = ref<number | null>(null);
 const formError = ref('');
 
 // Toast notification
@@ -662,6 +682,8 @@ const viewPurchaseDetails = async (id: number) => {
 };
 
 const openCreateModal = () => {
+  isEditing.value = false;
+  editingId.value = null;
   formModel.value = initialFormState();
   if (unitsOfMeasure.value.length > 0) {
     formModel.value.items[0].purchaseUnitId = unitsOfMeasure.value[0].id;
@@ -670,8 +692,57 @@ const openCreateModal = () => {
   showForm.value = true;
 };
 
+const openEditModal = async (purchaseId: number) => {
+  isLoading.value = true;
+  try {
+    const p = await purchaseService.getPurchaseById(purchaseId);
+    isEditing.value = true;
+    editingId.value = purchaseId;
+
+    const purchaseDateStr = p.purchaseDate ? p.purchaseDate.split('T')[0] : getTodayDateString();
+
+    formModel.value = {
+      supplierId: p.supplierId,
+      invoiceNumber: p.invoiceNumber || '',
+      purchaseDate: purchaseDateStr,
+      notes: p.notes || '',
+      items: p.details && p.details.length > 0
+        ? p.details.map(d => ({
+            productId: d.productId,
+            purchaseUnitId: d.purchaseUnitId || (unitsOfMeasure.value.length > 0 ? unitsOfMeasure.value[0].id : 1),
+            quantityPurchased: d.quantityPurchased,
+            conversionFactor: d.conversionFactor || 1.0,
+            unitCost: d.unitCost
+          }))
+        : [
+            {
+              productId: 0,
+              purchaseUnitId: unitsOfMeasure.value.length > 0 ? unitsOfMeasure.value[0].id : 1,
+              quantityPurchased: 1,
+              conversionFactor: 1.0,
+              unitCost: 0
+            }
+          ]
+    };
+    formError.value = '';
+    showForm.value = true;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Error al cargar los datos de la compra';
+    showToast(message, 'error');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const editFromDetails = (p: Purchase) => {
+  selectedPurchase.value = null;
+  openEditModal(p.id);
+};
+
 const closeForm = () => {
   showForm.value = false;
+  isEditing.value = false;
+  editingId.value = null;
   formError.value = '';
 };
 
@@ -778,12 +849,17 @@ const savePurchase = async () => {
       }))
     };
 
-    await purchaseService.createPurchase(payload);
-    showToast('Compra registrada exitosamente y stock actualizado.', 'success');
+    if (isEditing.value && editingId.value !== null) {
+      await purchaseService.updatePurchase(editingId.value, payload);
+      showToast('Compra actualizada exitosamente. Stock y costo promedio recalculados.', 'success');
+    } else {
+      await purchaseService.createPurchase(payload);
+      showToast('Compra registrada exitosamente y stock actualizado.', 'success');
+    }
     closeForm();
     await fetchPurchases();
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Error al registrar la compra';
+    const message = err instanceof Error ? err.message : (isEditing.value ? 'Error al actualizar la compra' : 'Error al registrar la compra');
     formError.value = message;
   } finally {
     isSubmitting.value = false;
