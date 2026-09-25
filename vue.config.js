@@ -3,6 +3,19 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     port: 8081,
+    client: {
+      overlay: {
+        runtimeErrors: (error) => {
+          if (
+            error?.message?.includes('ResizeObserver loop completed with undelivered notifications') ||
+            error?.message?.includes('ResizeObserver loop limit exceeded')
+          ) {
+            return false;
+          }
+          return true;
+        }
+      }
+    },
     proxy: {
       '/login':   { target: 'http://127.0.0.1:8082' },
       '/refresh': { target: 'http://127.0.0.1:8082' },
