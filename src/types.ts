@@ -89,7 +89,7 @@ export interface Session {
   user: User;
 }
 
-export type ViewState = 'login' | 'dashboard' | 'products' | 'users' | 'proveedores' | 'compras';
+export type ViewState = 'login' | 'dashboard' | 'products' | 'users' | 'proveedores' | 'compras' | 'ventas';
 
 export interface Supplier {
   id: number;
@@ -148,4 +148,54 @@ export interface EmailReceipt {
 }
 
 export type RevenuePeriod = 'today' | '7d' | '30d' | 'year';
+
+export interface SaleDetail {
+  id: number;
+  saleId: number;
+  productId: number;
+  productName?: string;
+  quantity: number;
+  historicalUnitPrice: number;
+  subtotal: number;
+}
+
+export interface Sale {
+  id: number;
+  userId: number;
+  userName?: string;
+  saleDate: string;
+  totalAmount: number;
+  paymentMethod: string;
+  itemsCount?: number;
+  createdAt?: string;
+  details?: SaleDetail[];
+}
+
+export interface SalePagination {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface SaleSummaryStats {
+  totalAmount: number;
+  totalCount: number;
+}
+
+export interface PaginatedSalesResponse {
+  data: Sale[];
+  pagination: SalePagination;
+  summary: SaleSummaryStats;
+}
+
+export interface SaleFilter {
+  page?: number;
+  pageSize?: number;
+  fromDate?: string;
+  toDate?: string;
+  paymentMethod?: string;
+  userId?: number;
+}
+
 
