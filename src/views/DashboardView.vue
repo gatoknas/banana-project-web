@@ -26,6 +26,12 @@
             Productos
           </button>
           <button
+            @click="activeTab = 'proveedores'"
+            :class="activeTab === 'proveedores' ? 'retro-nav-link-active' : 'retro-nav-link'"
+          >
+            Proveedores
+          </button>
+          <button
             @click="activeTab = 'users'"
             :class="activeTab === 'users' ? 'retro-nav-link-active' : 'retro-nav-link'"
           >
@@ -137,6 +143,11 @@
           <ProductsView />
         </div>
 
+        <!-- Suppliers View Tab -->
+        <div v-else-if="activeTab === 'proveedores'">
+          <SuppliersView />
+        </div>
+
         <!-- Users View Tab -->
         <div v-else-if="activeTab === 'users'">
           <UsersView />
@@ -156,6 +167,7 @@ import { ref, defineProps, defineEmits } from 'vue';
 import type { Session } from '../types';
 import ProductsView from './ProductsView.vue';
 import UsersView from './UsersView.vue';
+import SuppliersView from './SuppliersView.vue';
 import RevenueCard from '../components/RevenueCard.vue';
 
 defineProps<{
@@ -166,7 +178,7 @@ const emit = defineEmits<{
   (e: 'logout'): void;
 }>();
 
-const activeTab = ref<'home' | 'products' | 'users'>('home');
+const activeTab = ref<'home' | 'products' | 'proveedores' | 'users'>('home');
 
 const handleLogout = () => {
   emit('logout');

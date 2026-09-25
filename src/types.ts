@@ -30,7 +30,26 @@ export interface Session {
   user: User;
 }
 
-export type ViewState = 'login' | 'dashboard' | 'products' | 'users';
+export type ViewState = 'login' | 'dashboard' | 'products' | 'users' | 'proveedores' | 'compras';
+
+export interface Supplier {
+  id: number;
+  companyName: string;
+  contactName: string;
+  phone: string;
+  email: string;
+  taxId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SupplierRequest {
+  companyName: string;
+  contactName: string;
+  phone: string;
+  email: string;
+  taxId: string;
+}
 
 export interface DailyRevenueBucket {
   date: string;
