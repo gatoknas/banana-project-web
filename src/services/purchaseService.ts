@@ -23,5 +23,9 @@ export const purchaseService = {
 
   async createPurchase(payload: PurchaseRequest): Promise<{ message: string; id?: number }> {
     return api.post<{ message: string; id?: number }>('/api/v1/purchases', payload);
+  },
+
+  async updatePurchase(id: number, payload: PurchaseRequest): Promise<{ message: string; id?: number }> {
+    return api.put<{ message: string; id?: number }>(`/api/v1/purchases/${id}`, payload);
   }
 };
