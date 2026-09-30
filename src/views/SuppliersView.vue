@@ -61,19 +61,40 @@
             </span>
           </div>
         </div>
-        <div class="shrink-0 w-full md:w-auto">
+        <div class="shrink-0 w-full md:w-auto flex gap-2">
           <button
             @click="fetchSuppliers"
-            class="retro-btn-yellow w-full md:w-auto py-2 px-4 text-sm font-black border-2 shadow-retro-sm"
+            class="retro-btn-yellow py-2 px-4 text-sm font-black border-2 shadow-retro-sm"
           >
             Actualizar
+          </button>
+        </div>
+        <!-- View Mode Switcher -->
+        <div class="shrink-0 flex items-center gap-1 bg-black/20 p-1 rounded-xl border-2 border-black w-full md:w-auto justify-center">
+          <button
+            @click="setViewMode('grid')"
+            :class="viewMode === 'grid' ? 'bg-golden-title text-crimson font-black' : 'bg-cream/80 text-black hover:bg-cream font-bold'"
+            class="px-3 py-1.5 text-xs uppercase rounded-lg border-2 border-black transition-all flex items-center gap-1.5 shadow-retro-xs"
+            title="Vista en Cuadrícula (Tarjetas)"
+          >
+            <span>🎴</span>
+            <span>Tarjetas</span>
+          </button>
+          <button
+            @click="setViewMode('list')"
+            :class="viewMode === 'list' ? 'bg-golden-title text-crimson font-black' : 'bg-cream/80 text-black hover:bg-cream font-bold'"
+            class="px-3 py-1.5 text-xs uppercase rounded-lg border-2 border-black transition-all flex items-center gap-1.5 shadow-retro-xs"
+            title="Vista en Lista (Tabla)"
+          >
+            <span>📋</span>
+            <span>Lista</span>
           </button>
         </div>
       </div>
     </div>
 
     <!-- Suppliers Grid -->
-    <div v-if="!isLoading && filteredSuppliers.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="!isLoading && filteredSuppliers.length > 0 && viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="supplier in filteredSuppliers"
         :key="supplier.id"
@@ -145,6 +166,79 @@
             Eliminar
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Suppliers Table List View -->
+    <div v-if="!isLoading && filteredSuppliers.length > 0 && viewMode === 'list'" class="retro-panel-cream overflow-hidden space-y-4">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b-4 border-black bg-crimson text-cream font-black text-xs uppercase tracking-wider">
+              <th class="p-3">ID / NIT</th>
+              <th class="p-3">Empresa</th>
+              <th class="p-3">Contacto</th>
+              <th class="p-3">Teléfono / Correo</th>
+              <th class="p-3">Notas</th>
+              <th class="p-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y-2 divide-black/10 font-bold text-sm">
+            <tr v-for="supplier in filteredSuppliers" :key="supplier.id" class="hover:bg-yellow-50/50 transition-colors">
+              <td class="p-3 align-top whitespace-nowrap">
+                <div class="flex flex-col items-start gap-1">
+                  <span class="border-2 border-black rounded-lg px-2 py-0.5 text-xs font-black uppercase bg-emerald text-cream">
+                    ID #{{ supplier.id }}
+                  </span>
+                  <span
+                    v-if="supplier.taxId"
+                    class="bg-crimson text-cream border-2 border-black rounded-lg px-2 py-0.5 text-xs font-black uppercase"
+                  >
+                    NIT: {{ supplier.taxId }}
+                  </span>
+                  <span
+                    v-else
+                    class="bg-black/20 text-black/70 border-2 border-black/30 rounded-lg px-2 py-0.5 text-xs font-black uppercase"
+                  >
+                    Sin NIT
+                  </span>
+                </div>
+              </td>
+              <td class="p-3 align-top font-black text-crimson uppercase tracking-wide text-base">
+                {{ supplier.companyName }}
+              </td>
+              <td class="p-3 align-top text-black/90">
+                {{ supplier.contactName || 'No especificado' }}
+              </td>
+              <td class="p-3 align-top whitespace-nowrap">
+                <div class="text-xs text-black font-semibold">{{ supplier.phone || 'Sin tel.' }}</div>
+                <div class="text-xs text-black/70 font-semibold">{{ supplier.email || 'Sin correo' }}</div>
+              </td>
+              <td class="p-3 align-top max-w-xs">
+                <div v-if="supplier.description" class="text-xs text-black/80 font-normal line-clamp-2">
+                  {{ supplier.description }}
+                </div>
+                <span v-else class="text-xs text-black/40 italic">Sin notas</span>
+              </td>
+              <td class="p-3 align-top text-center whitespace-nowrap">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="editSupplier(supplier)"
+                    class="retro-btn-emerald py-1 px-3 text-xs font-black border-2 shadow-retro-xs hover:bg-emerald/95"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    @click="promptDeleteSupplier(supplier)"
+                    class="retro-btn-crimson py-1 px-3 text-xs font-black border-2 shadow-retro-xs hover:bg-red-800"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -344,6 +438,15 @@ const isSubmitting = ref(false);
 
 // Filter & Search
 const searchQuery = ref('');
+
+const viewMode = ref<'grid' | 'list'>(
+  (localStorage.getItem('suppliers_view_mode') as 'grid' | 'list') || 'grid'
+);
+
+const setViewMode = (mode: 'grid' | 'list') => {
+  viewMode.value = mode;
+  localStorage.setItem('suppliers_view_mode', mode);
+};
 
 // Slide-Over Modal State
 const showForm = ref(false);

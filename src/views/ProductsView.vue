@@ -18,8 +18,8 @@
 
     <!-- Filters and Search -->
     <div class="retro-panel-crimson">
-      <div class="flex flex-col md:flex-row gap-4">
-        <div class="flex-grow">
+      <div class="flex flex-col md:flex-row gap-4 items-end">
+        <div class="flex-grow w-full">
           <label for="search" class="block text-goldenrod font-extrabold text-sm mb-1">Buscar Producto</label>
           <input
             id="search"
@@ -42,11 +42,32 @@
             </option>
           </select>
         </div>
+        <!-- View Mode Switcher -->
+        <div class="shrink-0 flex items-center gap-1 bg-black/20 p-1 rounded-xl border-2 border-black w-full md:w-auto justify-center">
+          <button
+            @click="setViewMode('grid')"
+            :class="viewMode === 'grid' ? 'bg-golden-title text-crimson font-black' : 'bg-cream/80 text-black hover:bg-cream font-bold'"
+            class="px-3 py-1.5 text-xs uppercase rounded-lg border-2 border-black transition-all flex items-center gap-1.5 shadow-retro-xs"
+            title="Vista en Cuadrícula (Tarjetas)"
+          >
+            <span>🎴</span>
+            <span>Tarjetas</span>
+          </button>
+          <button
+            @click="setViewMode('list')"
+            :class="viewMode === 'list' ? 'bg-golden-title text-crimson font-black' : 'bg-cream/80 text-black hover:bg-cream font-bold'"
+            class="px-3 py-1.5 text-xs uppercase rounded-lg border-2 border-black transition-all flex items-center gap-1.5 shadow-retro-xs"
+            title="Vista en Lista (Tabla)"
+          >
+            <span>📋</span>
+            <span>Lista</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Products Grid -->
-    <div v-if="!isLoading && filteredProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Products Grid View -->
+    <div v-if="!isLoading && filteredProducts.length > 0 && viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
         v-for="product in filteredProducts"
         :key="product.id"
@@ -94,6 +115,62 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Products Table List View -->
+    <div v-if="!isLoading && filteredProducts.length > 0 && viewMode === 'list'" class="retro-panel-cream overflow-hidden space-y-4">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b-4 border-black bg-crimson text-cream font-black text-xs uppercase tracking-wider">
+              <th class="p-3">Categoría</th>
+              <th class="p-3">Producto</th>
+              <th class="p-3 text-right">Precio</th>
+              <th class="p-3 text-center">Stock</th>
+              <th class="p-3 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y-2 divide-black/10 font-bold text-sm">
+            <tr v-for="product in filteredProducts" :key="product.id" class="hover:bg-yellow-50/50 transition-colors">
+              <td class="p-3 align-top whitespace-nowrap">
+                <span class="bg-crimson text-cream border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase inline-block">
+                  {{ product.category }}
+                </span>
+              </td>
+              <td class="p-3 align-top">
+                <div class="font-black text-crimson uppercase tracking-wide text-base">{{ product.name }}</div>
+                <div v-if="product.description" class="text-xs text-black/70 font-semibold line-clamp-2 mt-0.5">
+                  {{ product.description }}
+                </div>
+              </td>
+              <td class="p-3 align-top text-right whitespace-nowrap font-black text-crimson text-base">
+                {{ formatCOP(product.price) }}
+              </td>
+              <td class="p-3 align-top text-center whitespace-nowrap">
+                <span class="border-2 border-black rounded-lg px-2.5 py-0.5 text-xs font-black uppercase bg-emerald text-cream inline-block">
+                  Stock: {{ product.stock }}
+                </span>
+              </td>
+              <td class="p-3 align-top text-center whitespace-nowrap">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    @click="editProduct(product)"
+                    class="retro-btn-emerald py-1 px-3 text-xs font-black border-2 shadow-retro-xs hover:bg-emerald/95"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    @click="deleteProduct(product.id)"
+                    class="retro-btn-crimson py-1 px-3 text-xs font-black border-2 shadow-retro-xs hover:bg-red-800"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -245,6 +322,15 @@ const selectedCategory = ref('Todos');
 const showForm = ref(false);
 const isEditing = ref(false);
 const formError = ref('');
+
+const viewMode = ref<'grid' | 'list'>(
+  (localStorage.getItem('products_view_mode') as 'grid' | 'list') || 'grid'
+);
+
+const setViewMode = (mode: 'grid' | 'list') => {
+  viewMode.value = mode;
+  localStorage.setItem('products_view_mode', mode);
+};
 
 // Form state
 interface ProductFormModel {
