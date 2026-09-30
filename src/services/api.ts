@@ -65,53 +65,83 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return {} as Promise<T>;
 }
 
+import { logger, generateTraceId } from '../utils/logger';
+
 export const api = {
   async get<T>(path: string): Promise<T> {
-    const response = await fetch(`${BASE_URL}${path}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        ...getAuthHeader()
-      }
-    });
-    return handleResponse<T>(response);
+    const traceId = generateTraceId();
+    try {
+      const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'X-Trace-ID': traceId,
+          ...getAuthHeader()
+        }
+      });
+      return await handleResponse<T>(response);
+    } catch (err) {
+      logger.error('api_request_failed', `GET ${path} failed`, err, { path, method: 'GET' }, traceId);
+      throw err;
+    }
   },
 
   async post<T>(path: string, body: unknown): Promise<T> {
-    const response = await fetch(`${BASE_URL}${path}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...getAuthHeader()
-      },
-      body: JSON.stringify(body)
-    });
-    return handleResponse<T>(response);
+    const traceId = generateTraceId();
+    try {
+      const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Trace-ID': traceId,
+          ...getAuthHeader()
+        },
+        body: JSON.stringify(body)
+      });
+      return await handleResponse<T>(response);
+    } catch (err) {
+      logger.error('api_request_failed', `POST ${path} failed`, err, { path, method: 'POST' }, traceId);
+      throw err;
+    }
   },
 
   async put<T>(path: string, body: unknown): Promise<T> {
-    const response = await fetch(`${BASE_URL}${path}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...getAuthHeader()
-      },
-      body: JSON.stringify(body)
-    });
-    return handleResponse<T>(response);
+    const traceId = generateTraceId();
+    try {
+      const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Trace-ID': traceId,
+          ...getAuthHeader()
+        },
+        body: JSON.stringify(body)
+      });
+      return await handleResponse<T>(response);
+    } catch (err) {
+      logger.error('api_request_failed', `PUT ${path} failed`, err, { path, method: 'PUT' }, traceId);
+      throw err;
+    }
   },
 
   async delete<T>(path: string): Promise<T> {
-    const response = await fetch(`${BASE_URL}${path}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        ...getAuthHeader()
-      }
-    });
-    return handleResponse<T>(response);
+    const traceId = generateTraceId();
+    try {
+      const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'X-Trace-ID': traceId,
+          ...getAuthHeader()
+        }
+      });
+      return await handleResponse<T>(response);
+    } catch (err) {
+      logger.error('api_request_failed', `DELETE ${path} failed`, err, { path, method: 'DELETE' }, traceId);
+      throw err;
+    }
   }
 };
 
