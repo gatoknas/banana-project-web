@@ -135,6 +135,10 @@
               <span class="text-crimson font-black text-xs uppercase w-20 shrink-0">Teléfono:</span>
               <span class="truncate">{{ supplier.phone || 'No registrado' }}</span>
             </div>
+            <div class="flex items-start gap-2">
+              <span class="text-crimson font-black text-xs uppercase w-20 shrink-0">Dirección:</span>
+              <span class="break-words">{{ supplier.address || 'No registrada' }}</span>
+            </div>
             <div class="flex items-center gap-2">
               <span class="text-crimson font-black text-xs uppercase w-20 shrink-0">Correo:</span>
               <span class="truncate">{{ supplier.email || 'No registrado' }}</span>
@@ -210,8 +214,9 @@
               <td class="p-3 align-top text-black/90">
                 {{ supplier.contactName || 'No especificado' }}
               </td>
-              <td class="p-3 align-top whitespace-nowrap">
+              <td class="p-3 align-top max-w-xs">
                 <div class="text-xs text-black font-semibold">{{ supplier.phone || 'Sin tel.' }}</div>
+                <div class="text-xs text-black/70 font-semibold whitespace-normal break-words">{{ supplier.address || 'Sin dirección' }}</div>
                 <div class="text-xs text-black/70 font-semibold">{{ supplier.email || 'Sin correo' }}</div>
               </td>
               <td class="p-3 align-top max-w-xs">
@@ -314,10 +319,25 @@
                   id="s-phone"
                   v-model="formModel.phone"
                   type="tel"
-                  placeholder="ej. +57 300 123 4567"
+                  placeholder="ej. +57 300 123 4567, +57 310 987 6543"
                   class="retro-input"
                   required
                 />
+                <p class="text-xs text-cream/70 font-normal mt-1">Puedes registrar varios teléfonos separándolos con comas.</p>
+              </div>
+
+              <div>
+                <label for="s-address" class="block text-golden-title font-extrabold text-sm mb-1">
+                  Dirección <span class="text-xs text-cream/70 font-normal">(Opcional)</span>
+                </label>
+                <textarea
+                  id="s-address"
+                  v-model="formModel.address"
+                  rows="2"
+                  placeholder="ej. Cra 10 #20-30, Calle 5 #6-7"
+                  class="retro-input resize-y"
+                ></textarea>
+                <p class="text-xs text-cream/70 font-normal mt-1">Puedes registrar varias direcciones separándolas con comas.</p>
               </div>
 
               <div>
@@ -475,6 +495,7 @@ const initialFormState = (): SupplierRequest => ({
   companyName: '',
   contactName: '',
   phone: '',
+  address: '',
   email: '',
   taxId: '',
   description: ''
@@ -507,6 +528,7 @@ const filteredSuppliers = computed(() => {
     (s.companyName && s.companyName.toLowerCase().includes(query)) ||
     (s.taxId && s.taxId.toLowerCase().includes(query)) ||
     (s.contactName && s.contactName.toLowerCase().includes(query)) ||
+    (s.address && s.address.toLowerCase().includes(query)) ||
     (s.email && s.email.toLowerCase().includes(query)) ||
     (s.description && s.description.toLowerCase().includes(query))
   );
@@ -535,6 +557,7 @@ const editSupplier = (supplier: Supplier) => {
     companyName: supplier.companyName,
     contactName: supplier.contactName || '',
     phone: supplier.phone || '',
+    address: supplier.address || '',
     email: supplier.email || '',
     taxId: supplier.taxId || '',
     description: supplier.description || ''
@@ -567,6 +590,7 @@ const saveSupplier = async () => {
     const payload: SupplierRequest = {
       companyName: model.companyName.trim(),
       phone: model.phone.trim(),
+      address: model.address && model.address.trim() ? model.address.trim() : null,
       contactName: model.contactName?.trim() || undefined,
       email: model.email?.trim() || undefined,
       taxId: model.taxId && model.taxId.trim() ? model.taxId.trim() : null,

@@ -96,6 +96,7 @@ export interface Supplier {
   companyName: string;
   contactName?: string;
   phone: string;
+  address?: string | null;
   email?: string;
   taxId?: string | null;
   description?: string | null;
@@ -107,6 +108,7 @@ export interface SupplierRequest {
   companyName: string;
   contactName?: string;
   phone: string;
+  address?: string | null;
   email?: string;
   taxId?: string | null;
   description?: string | null;
