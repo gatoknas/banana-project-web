@@ -16,36 +16,42 @@
           <button
             @click="activeTab = 'home'"
             :class="activeTab === 'home' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'home' ? 'page' : undefined"
           >
             Panel
           </button>
           <button
             @click="activeTab = 'products'"
             :class="activeTab === 'products' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'products' ? 'page' : undefined"
           >
             Productos
           </button>
           <button
             @click="activeTab = 'proveedores'"
             :class="activeTab === 'proveedores' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'proveedores' ? 'page' : undefined"
           >
             Proveedores
           </button>
           <button
             @click="activeTab = 'compras'"
             :class="activeTab === 'compras' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'compras' ? 'page' : undefined"
           >
             Compras
           </button>
           <button
             @click="activeTab = 'ventas'"
             :class="activeTab === 'ventas' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'ventas' ? 'page' : undefined"
           >
             Ventas
           </button>
           <button
             @click="activeTab = 'users'"
             :class="activeTab === 'users' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'users' ? 'page' : undefined"
           >
             Usuarios
           </button>
