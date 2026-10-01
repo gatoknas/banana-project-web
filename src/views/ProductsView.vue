@@ -273,7 +273,7 @@
                   v-model="formModel.description"
                   rows="4"
                   placeholder="Describe los beneficios e ingredientes del producto..."
-                  class="retro-input font-nunito resize-none"
+                  class="retro-input resize-none"
                   required
                 ></textarea>
               </div>
