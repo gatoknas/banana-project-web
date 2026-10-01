@@ -2,14 +2,14 @@
   <div class="retro-panel-white flex flex-col justify-between h-full">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-gray-100 gap-2">
       <div>
-        <h3 class="text-base font-black text-ink font-['Outfit'] tracking-wide">Evolución de Ingresos</h3>
+        <h3 class="text-base font-black text-ink font-outfit tracking-wide">Evolución de Ingresos</h3>
         <p class="text-xs text-gray-500 font-medium">Histórico diario de recaudación por ventas</p>
       </div>
       <div class="flex items-center space-x-1.5 bg-gray-100 p-1 rounded-xl border border-gray-200">
         <button
           v-for="p in periods"
           :key="p.value"
-          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit'] cursor-pointer"
+          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-outfit cursor-pointer"
           :class="modelValue === p.value ? 'bg-emerald text-white shadow-xs' : 'text-gray-600 hover:text-ink'"
           @click="$emit('update:modelValue', p.value)"
         >

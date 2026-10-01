@@ -2,7 +2,7 @@
   <div class="retro-panel-white flex flex-col justify-between h-full">
     <div class="flex items-center justify-between pb-4 border-b-2 border-gray-100">
       <div>
-        <h3 class="text-base font-black text-ink font-['Outfit'] tracking-wide flex items-center gap-2">
+        <h3 class="text-base font-black text-ink font-outfit tracking-wide flex items-center gap-2">
           <span>Alertas de Inventario</span>
           <span
             v-if="alerts && alerts.length > 0"
@@ -14,7 +14,7 @@
         <p class="text-xs text-gray-500 font-medium">Productos en o bajo su nivel mínimo de stock</p>
       </div>
       <button
-        class="text-xs font-black text-emerald hover:underline font-['Outfit'] cursor-pointer"
+        class="text-xs font-black text-emerald hover:underline font-outfit cursor-pointer"
         @click="$emit('navigate', 'products')"
       >
         Ir a Catálogo &rarr;

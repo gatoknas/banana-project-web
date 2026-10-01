@@ -90,7 +90,7 @@
                 <button
                   v-for="p in periodButtons"
                   :key="p.value"
-                  class="px-3 py-1.5 text-xs font-black rounded-xl transition-all font-['Outfit']"
+                  class="px-3 py-1.5 text-xs font-black rounded-xl transition-all font-outfit"
                   :class="selectedPeriod === p.value ? 'bg-golden-title text-crimson shadow-retro-sm border-2 border-black scale-105' : 'text-cream/80 hover:text-cream'"
                   @click="changePeriod(p.value)"
                 >
@@ -117,6 +117,9 @@
               </button>
             </div>
           </div>
+
+          <!-- Hero: the revenue / "today" moment is the loudest element -->
+          <RevenueCard class="col-span-full" />
 
           <!-- Error Alert if API Fails -->
           <div
@@ -185,8 +188,6 @@
             </div>
           </div>
 
-          <!-- Hero Bank Revenue Card -->
-          <RevenueCard class="col-span-full mt-4" />
         </div>
 
         <!-- Products View Tab -->
