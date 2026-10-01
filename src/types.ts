@@ -149,7 +149,7 @@ export interface EmailReceipt {
   createdAt: string;
 }
 
-export type RevenuePeriod = 'today' | '7d' | '30d' | 'year';
+export type RevenuePeriod = 'today' | '7d' | '30d' | 'month' | '3m' | '6m' | 'year';
 
 export interface SaleDetail {
   id: number;
