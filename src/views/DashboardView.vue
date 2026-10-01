@@ -219,7 +219,7 @@
 
     <!-- Footer -->
     <footer class="border-t-4 border-black bg-crimson/80 text-cream/70 text-center py-4 text-xs font-bold tracking-wider mt-auto">
-      Plataforma Ayurami Web • Todos los derechos reservados © 2026
+      Plataforma Ayurami Web. Todos los derechos reservados © 2026
     </footer>
   </div>
 </template>

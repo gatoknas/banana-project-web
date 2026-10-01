@@ -4,9 +4,9 @@
     <div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-black/30 pb-3">
         <div>
-          <span class="text-xs tracking-wider font-black text-goldenrod uppercase">Ingresos Totales</span>
+          <span class="text-xs tracking-wider font-black text-goldenrod uppercase">Recaudación</span>
           <h3 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream mt-0.5">
-            TOTAL REVENUE
+            Ingresos Totales
           </h3>
         </div>
 
