@@ -20,7 +20,9 @@ module.exports = {
         emerald: "#016a4d",
         lavender: "#E6E6FA",
         cream: "#FFFDD0",
-        guayaba: "#de9a7f"
+        guayaba: "#de9a7f",
+        ink: "#1a1208",
+        muted: "#6f6152"
       },
       fontFamily: {
         outfit: ["Outfit", "sans-serif"],

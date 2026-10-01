@@ -1,20 +1,20 @@
 <template>
-  <div class="retro-panel p-5 flex flex-col justify-between h-full">
-    <div class="flex items-center justify-between pb-4 border-b-2 border-line">
+  <div class="retro-panel-white flex flex-col justify-between h-full">
+    <div class="flex items-center justify-between pb-4 border-b-2 border-gray-100">
       <div>
-        <h3 class="text-base font-bold text-ink font-['Outfit'] tracking-wide flex items-center gap-2">
+        <h3 class="text-base font-black text-ink font-['Outfit'] tracking-wide flex items-center gap-2">
           <span>Alertas de Inventario</span>
           <span
             v-if="alerts && alerts.length > 0"
-            class="px-2 py-0.5 text-[11px] font-black bg-crimson text-white rounded-full border border-[#2d3748] shadow-2xs"
+            class="px-2 py-0.5 text-[11px] font-black bg-crimson text-white rounded-full border border-black shadow-xs"
           >
             {{ alerts.length }}
           </span>
         </h3>
-        <p class="text-xs text-muted font-medium">Productos en o bajo su nivel mínimo de stock</p>
+        <p class="text-xs text-gray-500 font-medium">Productos en o bajo su nivel mínimo de stock</p>
       </div>
       <button
-        class="text-xs font-bold text-emerald hover:underline font-['Outfit'] cursor-pointer"
+        class="text-xs font-black text-emerald hover:underline font-['Outfit'] cursor-pointer"
         @click="$emit('navigate', 'products')"
       >
         Ir a Catálogo &rarr;
@@ -35,6 +35,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { EChartsOption } from 'echarts';
+import type { EChartsCallbackDataParams } from './echarts-types';
 import EChart from '../charts/EChart.vue';
 import type { InventoryAlertEntry } from '../../types';
 import { useRetroChartTheme } from '../../composables/useChart';
@@ -61,7 +62,7 @@ const chartOption = computed<EChartsOption>(() => {
       ...baseTooltip,
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      formatter: (params: any) => {
+      formatter: (params: EChartsCallbackDataParams | EChartsCallbackDataParams[]) => {
         if (!params || !params[0]) return '';
         const idx = params[0].dataIndex;
         const item = sorted[idx];
@@ -103,7 +104,7 @@ const chartOption = computed<EChartsOption>(() => {
     xAxis: {
       type: 'value',
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: '#f0e6d6', type: 'dashed' } },
+      splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
       axisLabel: {
         color: '#718096',
         fontFamily: 'Outfit, sans-serif',
@@ -131,7 +132,7 @@ const chartOption = computed<EChartsOption>(() => {
         type: 'bar',
         data: currentStocks,
         itemStyle: {
-          color: (param: any) => {
+          color: (param: EChartsCallbackDataParams) => {
             const idx = param.dataIndex;
             const item = sorted[idx];
             if (item.currentStock <= 0) return '#742a2a';
@@ -149,7 +150,7 @@ const chartOption = computed<EChartsOption>(() => {
           fontSize: 10,
           fontWeight: 'bold',
           color: '#2d3748',
-          formatter: (p: any) => `${p.value}`
+          formatter: (p: EChartsCallbackDataParams) => `${p.value}`
         }
       },
       {

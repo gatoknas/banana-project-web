@@ -1,21 +1,21 @@
 <template>
-  <div class="retro-panel p-5 flex flex-col justify-between h-full">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-line gap-2">
+  <div class="retro-panel-white flex flex-col justify-between h-full">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-gray-100 gap-2">
       <div>
-        <h3 class="text-base font-bold text-ink font-['Outfit'] tracking-wide">Top 10 Productos Más Vendidos</h3>
-        <p class="text-xs text-muted font-medium">Líderes de rotación e ingresos</p>
+        <h3 class="text-base font-black text-ink font-['Outfit'] tracking-wide">Top 10 Productos Más Vendidos</h3>
+        <p class="text-xs text-gray-500 font-medium">Líderes de rotación e ingresos</p>
       </div>
-      <div class="flex items-center space-x-1 bg-[#f5ede0] p-1 rounded-xl border border-line">
+      <div class="flex items-center space-x-1 bg-gray-100 p-1 rounded-xl border border-gray-200">
         <button
-          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit']"
-          :class="metric === 'quantity' ? 'bg-emerald text-white shadow-xs' : 'text-muted hover:text-ink'"
+          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit'] cursor-pointer"
+          :class="metric === 'quantity' ? 'bg-emerald text-white shadow-xs' : 'text-gray-600 hover:text-ink'"
           @click="metric = 'quantity'"
         >
           Unidades
         </button>
         <button
-          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit']"
-          :class="metric === 'revenue' ? 'bg-emerald text-white shadow-xs' : 'text-muted hover:text-ink'"
+          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit'] cursor-pointer"
+          :class="metric === 'revenue' ? 'bg-emerald text-white shadow-xs' : 'text-gray-600 hover:text-ink'"
           @click="metric = 'revenue'"
         >
           Ingresos
@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { EChartsOption } from 'echarts';
+import type { EChartsCallbackDataParams } from './echarts-types';
 import EChart from '../charts/EChart.vue';
 import type { TopProductEntry } from '../../types';
 import { useRetroChartTheme } from '../../composables/useChart';
@@ -62,7 +63,7 @@ const chartOption = computed<EChartsOption>(() => {
       ...baseTooltip,
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      formatter: (params: any) => {
+      formatter: (params: EChartsCallbackDataParams | EChartsCallbackDataParams[]) => {
         if (!params || !params[0]) return '';
         const idx = params[0].dataIndex;
         const item = sorted[idx];
@@ -85,7 +86,7 @@ const chartOption = computed<EChartsOption>(() => {
     xAxis: {
       type: 'value',
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: '#f0e6d6', type: 'dashed' } },
+      splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
       axisLabel: {
         color: '#718096',
         fontFamily: 'Outfit, sans-serif',
@@ -137,8 +138,8 @@ const chartOption = computed<EChartsOption>(() => {
           fontSize: 10,
           fontWeight: 'bold',
           color: '#2d3748',
-          formatter: (p: any) =>
-            metric.value === 'quantity' ? `${p.value}` : formatCompactCOP(p.value)
+          formatter: (p: EChartsCallbackDataParams) =>
+            metric.value === 'quantity' ? `${p.value}` : formatCompactCOP(p.value as number)
         }
       }
     ]

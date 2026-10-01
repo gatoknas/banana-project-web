@@ -36,6 +36,10 @@
     @apply bg-guayaba border-6 border-golden-title rounded-3xl shadow-retro p-6 text-crimson transition-all duration-200;
   }
 
+  .retro-panel-white {
+    @apply bg-white border-6 border-golden-title rounded-3xl shadow-retro p-6 text-gray-900 transition-all duration-200;
+  }
+
   /* Interactive Buttons with Cartoon Accent Outlines */
   .retro-btn-yellow {
     @apply bg-golden-title text-crimson font-extrabold border-4 border-black rounded-2xl px-6 py-3 shadow-retro-sm hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 active:bg-goldenrod active:scale-95 transition-all duration-150 text-center;

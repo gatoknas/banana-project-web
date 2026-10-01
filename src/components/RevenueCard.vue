@@ -186,7 +186,7 @@
             v-else
             v-for="receipt in receipts"
             :key="receipt.id"
-            class="bg-cream/80 border-3 border-black rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-retro-sm hover:translate-x-0.5 transition-all"
+            class="bg-cream/80 border-2 border-black rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-retro-sm hover:translate-x-0.5 transition-all"
           >
             <div class="flex items-center gap-3">
               <!-- Bank / Method Icon Badge -->

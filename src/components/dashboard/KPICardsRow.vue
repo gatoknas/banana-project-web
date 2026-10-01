@@ -26,7 +26,7 @@
     <div class="retro-panel-cream p-4 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold uppercase tracking-wider text-muted font-['Outfit']">Tickets Hoy</span>
-        <div class="w-8 h-8 rounded-lg bg-vintage-blue/10 border border-vintage-blue/30 flex items-center justify-center text-vintage-blue">
+        <div class="w-8 h-8 rounded-lg bg-sky-blue/10 border border-sky-blue/30 flex items-center justify-center text-sky-blue">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
@@ -63,7 +63,7 @@
     <!-- 4. Stock Crítico -->
     <div
       class="retro-panel-cream p-4 flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group"
-      :class="{ 'border-crimson/80 bg-[#fff5f5]': (kpis?.lowStockProducts || 0) > 0 }"
+      :class="{ 'border-crimson/80 bg-crimson/10': (kpis?.lowStockProducts || 0) > 0 }"
       @click="$emit('navigate', 'products')"
     >
       <div class="flex items-center justify-between mb-2">
@@ -95,7 +95,7 @@
     <div class="retro-panel-cream p-4 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold uppercase tracking-wider text-muted font-['Outfit']">Compras Mes</span>
-        <div class="w-8 h-8 rounded-lg bg-orange-600/10 border border-orange-600/30 flex items-center justify-center text-orange-600">
+        <div class="w-8 h-8 rounded-lg bg-guayaba/20 border border-guayaba/50 flex items-center justify-center text-crimson">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
@@ -114,7 +114,7 @@
     <div class="retro-panel-cream p-4 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-bold uppercase tracking-wider text-muted font-['Outfit']">Personal</span>
-        <div class="w-8 h-8 rounded-lg bg-teal-600/10 border border-teal-600/30 flex items-center justify-center text-teal-600">
+        <div class="w-8 h-8 rounded-lg bg-turquoise/20 border border-turquoise/50 flex items-center justify-center text-emerald">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>

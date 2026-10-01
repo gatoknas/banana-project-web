@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-emerald font-outfit text-cream flex flex-col select-none">
+  <div class="min-h-screen bg-emerald font-outfit text-cream flex flex-col">
     <!-- Navbar -->
     <header class="border-b-6 border-golden-title bg-crimson px-4 py-3 sticky top-0 z-50 shadow-retro">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -288,8 +288,8 @@ const loadDashboardStats = async () => {
   try {
     const { from, to } = computeDateRange(selectedPeriod.value);
     stats.value = await dashboardService.getDashboardStats(from, to);
-  } catch (err: any) {
-    errorMessage.value = err.message || 'Error al cargar las estadísticas del panel.';
+  } catch (err: unknown) {
+    errorMessage.value = (err as Error).message || 'Error al cargar las estadísticas del panel.';
   } finally {
     loading.value = false;
   }

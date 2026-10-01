@@ -357,7 +357,7 @@
           </div>
 
           <!-- Grand Total Box -->
-          <div class="bg-golden-title/20 border-3 border-black rounded-xl p-4 flex justify-between items-center mb-6 shadow-retro-xs">
+          <div class="bg-golden-title/20 border-2 border-black rounded-xl p-4 flex justify-between items-center mb-6 shadow-retro-xs">
             <div>
               <span class="text-xs font-black uppercase text-crimson tracking-wider">Total Facturado</span>
               <p class="text-xs font-bold text-black/60">Moneda legal: Pesos Colombianos (COP)</p>
