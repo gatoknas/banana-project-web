@@ -146,10 +146,11 @@ export const api = {
 };
 
 export const emailReceiptsApi = {
-  getRevenueSummary(from?: string, to?: string): Promise<RevenueSummary> {
+  getRevenueSummary(from?: string, to?: string, interval?: string): Promise<RevenueSummary> {
     const params = new URLSearchParams();
     if (from) params.append('from', from);
     if (to) params.append('to', to);
+    if (interval) params.append('interval', interval);
     const query = params.toString() ? `?${params.toString()}` : '';
     return api.get<RevenueSummary>(`/api/v1/email-receipts/summary${query}`);
   },
