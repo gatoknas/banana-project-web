@@ -4,9 +4,9 @@
     <div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-black/30 pb-3">
         <div>
-          <span class="text-xs tracking-wider font-black text-goldenrod uppercase">Ingresos Totales</span>
+          <span class="text-xs tracking-wider font-black text-goldenrod uppercase">Recaudación</span>
           <h3 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-cream mt-0.5">
-            TOTAL REVENUE
+            Ingresos Totales
           </h3>
         </div>
 
@@ -147,6 +147,9 @@
     <div
       v-if="showDetailModal"
       class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Desglose de recibos bancarios"
       @click.self="showDetailModal = false"
     >
       <div class="retro-panel-cream max-w-3xl w-full max-h-[85vh] flex flex-col shadow-retro border-6 border-black text-crimson">
@@ -232,7 +235,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import type { RevenueSummary, RevenuePeriod, EmailReceipt, DailyRevenueBucket } from '../types';
 import { emailReceiptsApi } from '../services/api';
 import { formatCOP } from '../utils/currency';
@@ -379,6 +382,18 @@ function formatDate(dateStr?: string): string {
     return dateStr;
   }
 }
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') showDetailModal.value = false;
+}
+
+watch(showDetailModal, (open) => {
+  if (open) {
+    window.addEventListener('keydown', onKeydown);
+  } else {
+    window.removeEventListener('keydown', onKeydown);
+  }
+});
 
 onMounted(() => {
   fetchSummary();

@@ -2,19 +2,19 @@
   <div class="retro-panel-white flex flex-col justify-between h-full">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-gray-100 gap-2">
       <div>
-        <h3 class="text-base font-black text-ink font-['Outfit'] tracking-wide">Top 10 Productos Más Vendidos</h3>
+        <h3 class="text-base font-black text-ink font-outfit tracking-wide">Top 10 Productos Más Vendidos</h3>
         <p class="text-xs text-gray-500 font-medium">Líderes de rotación e ingresos</p>
       </div>
       <div class="flex items-center space-x-1 bg-gray-100 p-1 rounded-xl border border-gray-200">
         <button
-          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit'] cursor-pointer"
+          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-outfit cursor-pointer"
           :class="metric === 'quantity' ? 'bg-emerald text-white shadow-xs' : 'text-gray-600 hover:text-ink'"
           @click="metric = 'quantity'"
         >
           Unidades
         </button>
         <button
-          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit'] cursor-pointer"
+          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-outfit cursor-pointer"
           :class="metric === 'revenue' ? 'bg-emerald text-white shadow-xs' : 'text-gray-600 hover:text-ink'"
           @click="metric = 'revenue'"
         >

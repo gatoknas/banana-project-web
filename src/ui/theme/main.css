@@ -2,15 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,400&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
-
 @layer base {
   body {
     @apply bg-emerald text-cream font-outfit antialiased selection:bg-goldenrod selection:text-crimson min-h-screen;
   }
 
-  input, select, textarea {
-    @apply font-nunito;
+  :focus-visible {
+    outline: 3px solid #FFD700;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

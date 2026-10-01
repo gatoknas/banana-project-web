@@ -26,7 +26,7 @@ module.exports = {
       },
       fontFamily: {
         outfit: ["Outfit", "sans-serif"],
-        nunito: ["Nunito", "sans-serif"]
+        mono: ["Space Mono", "ui-monospace", "SFMono-Regular", "monospace"]
       },
       borderWidth: {
         '6': '6px',

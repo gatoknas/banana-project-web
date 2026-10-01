@@ -1,7 +1,7 @@
 <template>
   <div class="retro-panel-white flex flex-col justify-between h-full">
     <div class="pb-4 border-b-2 border-gray-100">
-      <h3 class="text-base font-black text-ink font-['Outfit'] tracking-wide">Compras vs Ventas Mensuales</h3>
+      <h3 class="text-base font-black text-ink font-outfit tracking-wide">Compras vs Ventas Mensuales</h3>
       <p class="text-xs text-gray-500 font-medium">Comparativo mensual de gastos en insumos vs ingresos generados</p>
     </div>
 
