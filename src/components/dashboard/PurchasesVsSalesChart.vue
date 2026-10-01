@@ -1,8 +1,8 @@
 <template>
-  <div class="retro-panel p-5 flex flex-col justify-between h-full">
-    <div class="pb-4 border-b-2 border-line">
-      <h3 class="text-base font-bold text-ink font-['Outfit'] tracking-wide">Compras vs Ventas Mensuales</h3>
-      <p class="text-xs text-muted font-medium">Comparativo mensual de gastos en insumos vs ingresos generados</p>
+  <div class="retro-panel-white flex flex-col justify-between h-full">
+    <div class="pb-4 border-b-2 border-gray-100">
+      <h3 class="text-base font-black text-ink font-outfit tracking-wide">Compras vs Ventas Mensuales</h3>
+      <p class="text-xs text-gray-500 font-medium">Comparativo mensual de gastos en insumos vs ingresos generados</p>
     </div>
 
     <div class="mt-4 flex-1 min-h-[300px]">
@@ -14,6 +14,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { EChartsOption } from 'echarts';
+import type { EChartsCallbackDataParams } from './echarts-types';
 import EChart from '../charts/EChart.vue';
 import type { PurchasesVsSalesEntry } from '../../types';
 import { useRetroChartTheme } from '../../composables/useChart';
@@ -35,7 +36,7 @@ const chartOption = computed<EChartsOption>(() => {
       ...baseTooltip,
       trigger: 'axis',
       axisPointer: { type: 'cross' },
-      formatter: (params: any) => {
+      formatter: (params: EChartsCallbackDataParams | EChartsCallbackDataParams[]) => {
         if (!params || !params[0]) return '';
         const idx = params[0].dataIndex;
         const m = months[idx];
@@ -89,7 +90,7 @@ const chartOption = computed<EChartsOption>(() => {
     yAxis: {
       type: 'value',
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: '#f0e6d6', type: 'dashed' } },
+      splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
       axisLabel: {
         color: '#718096',
         fontFamily: 'Outfit, sans-serif',

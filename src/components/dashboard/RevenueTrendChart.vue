@@ -1,16 +1,16 @@
 <template>
-  <div class="retro-panel p-5 flex flex-col justify-between h-full">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-line gap-2">
+  <div class="retro-panel-white flex flex-col justify-between h-full">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b-2 border-gray-100 gap-2">
       <div>
-        <h3 class="text-base font-bold text-ink font-['Outfit'] tracking-wide">Evolución de Ingresos</h3>
-        <p class="text-xs text-muted font-medium">Histórico diario de recaudación por ventas</p>
+        <h3 class="text-base font-black text-ink font-outfit tracking-wide">Evolución de Ingresos</h3>
+        <p class="text-xs text-gray-500 font-medium">Histórico diario de recaudación por ventas</p>
       </div>
-      <div class="flex items-center space-x-1.5 bg-[#f5ede0] p-1 rounded-xl border border-line">
+      <div class="flex items-center space-x-1.5 bg-gray-100 p-1 rounded-xl border border-gray-200">
         <button
           v-for="p in periods"
           :key="p.value"
-          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-['Outfit']"
-          :class="modelValue === p.value ? 'bg-emerald text-white shadow-xs' : 'text-muted hover:text-ink'"
+          class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all font-outfit cursor-pointer"
+          :class="modelValue === p.value ? 'bg-emerald text-white shadow-xs' : 'text-gray-600 hover:text-ink'"
           @click="$emit('update:modelValue', p.value)"
         >
           {{ p.label }}
@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { EChartsOption } from 'echarts';
+import type { EChartsCallbackDataParams } from './echarts-types';
 import EChart from '../charts/EChart.vue';
 import type { SalesTimelineEntry } from '../../types';
 import { useRetroChartTheme } from '../../composables/useChart';
@@ -58,7 +59,7 @@ const chartOption = computed<EChartsOption>(() => {
     tooltip: {
       ...baseTooltip,
       trigger: 'axis',
-      formatter: (params: any) => {
+      formatter: (params: EChartsCallbackDataParams | EChartsCallbackDataParams[]) => {
         if (!params || !params[0]) return '';
         const index = params[0].dataIndex;
         const date = dates[index];
@@ -97,7 +98,7 @@ const chartOption = computed<EChartsOption>(() => {
     yAxis: {
       type: 'value',
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: '#f0e6d6', type: 'dashed' } },
+      splitLine: { lineStyle: { color: '#e2e8f0', type: 'dashed' } },
       axisLabel: {
         color: '#718096',
         fontFamily: 'Outfit, sans-serif',

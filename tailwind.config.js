@@ -20,11 +20,13 @@ module.exports = {
         emerald: "#016a4d",
         lavender: "#E6E6FA",
         cream: "#FFFDD0",
-        guayaba: "#de9a7f"
+        guayaba: "#de9a7f",
+        ink: "#1a1208",
+        muted: "#6f6152"
       },
       fontFamily: {
         outfit: ["Outfit", "sans-serif"],
-        nunito: ["Nunito", "sans-serif"]
+        mono: ["Space Mono", "ui-monospace", "SFMono-Regular", "monospace"]
       },
       borderWidth: {
         '6': '6px',

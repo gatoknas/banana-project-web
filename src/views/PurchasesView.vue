@@ -388,7 +388,7 @@
                   <div
                     v-for="(item, index) in formModel.items"
                     :key="index"
-                    class="bg-cream/95 border-3 border-black rounded-xl p-3 shadow-retro-sm text-black space-y-2"
+                    class="bg-cream/95 border-2 border-black rounded-xl p-3 shadow-retro-sm text-black space-y-2"
                   >
                     <div class="flex justify-between items-center border-b border-black/10 pb-1.5">
                       <span class="text-xs font-black uppercase text-crimson">Línea #{{ index + 1 }}</span>

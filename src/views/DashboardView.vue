@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-emerald font-outfit text-cream flex flex-col select-none">
+  <div class="min-h-screen bg-emerald font-outfit text-cream flex flex-col">
     <!-- Navbar -->
     <header class="border-b-6 border-golden-title bg-crimson px-4 py-3 sticky top-0 z-50 shadow-retro">
       <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -16,36 +16,42 @@
           <button
             @click="activeTab = 'home'"
             :class="activeTab === 'home' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'home' ? 'page' : undefined"
           >
             Panel
           </button>
           <button
             @click="activeTab = 'products'"
             :class="activeTab === 'products' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'products' ? 'page' : undefined"
           >
             Productos
           </button>
           <button
             @click="activeTab = 'proveedores'"
             :class="activeTab === 'proveedores' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'proveedores' ? 'page' : undefined"
           >
             Proveedores
           </button>
           <button
             @click="activeTab = 'compras'"
             :class="activeTab === 'compras' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'compras' ? 'page' : undefined"
           >
             Compras
           </button>
           <button
             @click="activeTab = 'ventas'"
             :class="activeTab === 'ventas' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'ventas' ? 'page' : undefined"
           >
             Ventas
           </button>
           <button
             @click="activeTab = 'users'"
             :class="activeTab === 'users' ? 'retro-nav-link-active' : 'retro-nav-link'"
+            :aria-current="activeTab === 'users' ? 'page' : undefined"
           >
             Usuarios
           </button>
@@ -90,7 +96,7 @@
                 <button
                   v-for="p in periodButtons"
                   :key="p.value"
-                  class="px-3 py-1.5 text-xs font-black rounded-xl transition-all font-['Outfit']"
+                  class="px-3 py-1.5 text-xs font-black rounded-xl transition-all font-outfit"
                   :class="selectedPeriod === p.value ? 'bg-golden-title text-crimson shadow-retro-sm border-2 border-black scale-105' : 'text-cream/80 hover:text-cream'"
                   @click="changePeriod(p.value)"
                 >
@@ -117,6 +123,9 @@
               </button>
             </div>
           </div>
+
+          <!-- Hero: the revenue / "today" moment is the loudest element -->
+          <RevenueCard class="col-span-full" />
 
           <!-- Error Alert if API Fails -->
           <div
@@ -185,8 +194,6 @@
             </div>
           </div>
 
-          <!-- Hero Bank Revenue Card -->
-          <RevenueCard class="col-span-full mt-4" />
         </div>
 
         <!-- Products View Tab -->
@@ -218,7 +225,7 @@
 
     <!-- Footer -->
     <footer class="border-t-4 border-black bg-crimson/80 text-cream/70 text-center py-4 text-xs font-bold tracking-wider mt-auto">
-      Plataforma Ayurami Web • Todos los derechos reservados © 2026
+      Plataforma Ayurami Web. Todos los derechos reservados © 2026
     </footer>
   </div>
 </template>
@@ -288,8 +295,8 @@ const loadDashboardStats = async () => {
   try {
     const { from, to } = computeDateRange(selectedPeriod.value);
     stats.value = await dashboardService.getDashboardStats(from, to);
-  } catch (err: any) {
-    errorMessage.value = err.message || 'Error al cargar las estadísticas del panel.';
+  } catch (err: unknown) {
+    errorMessage.value = (err as Error).message || 'Error al cargar las estadísticas del panel.';
   } finally {
     loading.value = false;
   }

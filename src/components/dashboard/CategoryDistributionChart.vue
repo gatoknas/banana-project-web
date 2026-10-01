@@ -1,8 +1,8 @@
 <template>
-  <div class="retro-panel p-5 flex flex-col justify-between h-full">
-    <div class="pb-4 border-b-2 border-line">
-      <h3 class="text-base font-bold text-ink font-['Outfit'] tracking-wide">Ventas por Categoría</h3>
-      <p class="text-xs text-muted font-medium">Participación de ingresos por familia de productos</p>
+  <div class="retro-panel-white flex flex-col justify-between h-full">
+    <div class="pb-4 border-b-2 border-gray-100">
+      <h3 class="text-base font-black text-ink font-outfit tracking-wide">Ventas por Categoría</h3>
+      <p class="text-xs text-gray-500 font-medium">Participación de ingresos por familia de productos</p>
     </div>
 
     <div class="mt-4 flex-1 min-h-[300px]">
@@ -14,6 +14,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { EChartsOption } from 'echarts';
+import type { EChartsCallbackDataParams } from './echarts-types';
 import EChart from '../charts/EChart.vue';
 import type { CategoryEntry } from '../../types';
 import { useRetroChartTheme } from '../../composables/useChart';
@@ -43,7 +44,7 @@ const chartOption = computed<EChartsOption>(() => {
     tooltip: {
       ...baseTooltip,
       trigger: 'item',
-      formatter: (params: any) => {
+      formatter: (params: EChartsCallbackDataParams) => {
         const item = params.data;
         const pct = totalRev > 0 ? ((item.value / totalRev) * 100).toFixed(1) : '0';
         return `
