@@ -5,6 +5,7 @@ module.exports = defineConfig({
     port: 8081,
     client: {
       overlay: {
+        warnings: false,
         runtimeErrors: (error) => {
           if (
             error?.message?.includes('ResizeObserver loop completed with undelivered notifications') ||

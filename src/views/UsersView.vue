@@ -260,17 +260,17 @@ const formModel = ref<User>(initialFormState());
 const fetchUsers = async () => {
   isLoading.value = true;
   try {
-    const rawUsers = await api.get<any[]>('/api/v1/users');
+    const rawUsers = await api.get<Record<string, unknown>[] >('/api/v1/users');
     users.value = rawUsers.map(u => ({
       id: String(u.id),
-      name: u.fullName,
-      email: u.username + '@ayurami.com',
-      username: u.username,
+      name: u.fullName as string,
+      email: (u.username as string) + '@ayurami.com',
+      username: u.username as string,
       role: u.role === 'ayurami-admin' ? 'Administrador' : 'Vendedor',
       status: u.isActive ? 'Activo' : 'Inactivo',
-      avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + u.username
+      avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + String(u.username)
     }));
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error fetching users:', err);
   } finally {
     isLoading.value = false;
@@ -317,8 +317,9 @@ const deleteUser = async (id: string) => {
     try {
       await api.delete(`/api/v1/users/${id}`);
       await fetchUsers();
-    } catch (err: any) {
-      alert('Error al eliminar usuario: ' + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error desconocido';
+      alert('Error al eliminar usuario: ' + message);
     }
   }
 };
@@ -354,8 +355,8 @@ const saveUser = async () => {
     }
     await fetchUsers();
     closeForm();
-  } catch (err: any) {
-    formError.value = err.message || 'Error al guardar el usuario.';
+  } catch (err: unknown) {
+    formError.value = err instanceof Error ? err.message : 'Error al guardar el usuario.';
   }
 };
 </script>
